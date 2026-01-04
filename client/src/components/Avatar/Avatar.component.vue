@@ -14,7 +14,7 @@ const src = computed(() => {
   const safeId = Number.isFinite(props.id) ? props.id : 0
   const clampedId = Math.min(41, Math.max(0, safeId))
   const padded = clampedId.toString().padStart(2, '0')
-  return `/src/assets/images/avatars/avatar-${padded}.svg`
+  return `../../assets/images/avatars/avatar-${padded}.svg`
 })
 </script>
 
