@@ -24,10 +24,8 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-// Avatar “en preview” dentro de la galería (NO confirmado)
 const tempSelected = ref<number | null>(null)
 
-// Cada vez que se abre el modal, sincronizamos tempSelected con el avatar confirmado
 watch(
   () => props.open,
   (isOpen) => {
@@ -36,22 +34,16 @@ watch(
   { immediate: true },
 )
 
-const gridStyle = computed(() => ({
-  gridTemplateColumns: `repeat(auto-fit, minmax(${props.minCellPx}px, 1fr))`,
-}))
-
 const closeModal = () => {
   emit('update:open', false)
   emit('close')
 }
 
-// Solo cambia el preview
 const preview = (id: number) => {
   if (props.disabled) return
   tempSelected.value = id
 }
 
-// Confirma el avatar seleccionado
 const confirm = () => {
   if (props.disabled) return
   if (tempSelected.value == null) return
@@ -66,7 +58,7 @@ const confirm = () => {
   <Modal
     :modelValue="open"
     @update:modelValue="(v) => emit('update:open', v)"
-    size="auto"
+    size="md"
     title="Elige tu imagen de usuario"
     :closeOnOverlay="false"
     :closeOnEsc="true"
@@ -75,8 +67,9 @@ const confirm = () => {
     :onSubmit="confirm"
     submitText="Aceptar"
     cancelText="Cancelar"
+    scrollable
   >
-    <div class="avatar-gallery" :style="gridStyle" role="list">
+    <div class="avatar-gallery" role="list">
       <div class="avatar-gallery__grid">
         <button
           v-for="avatar in AVATARS"
