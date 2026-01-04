@@ -1,0 +1,67 @@
+@use '@styles/variables.scss' as *;
+@use '@styles/colors.scss' as *;
+@use '@styles/fonts.scss' as *;
+
+.create-user-modal {
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+
+  &__avatar {
+    position: relative;
+    margin-top: -5rem;
+    width: fit-content;
+    align-self: flex-end;
+
+    &__edit-button {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 2.25rem;
+      height: 2.25rem;
+      background-color: var(--primary-dark);
+      border-radius: $radius-sm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    &__username {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    &__label {
+      width: fit-content;
+      background-color: var(--primary-dark);
+      color: var(--pure-white);
+      padding: 0.5rem 1rem;
+      border-radius: $radius-xl;
+    }
+
+    &__input {
+      padding: 0.5rem 1rem;
+      border-radius: $radius-xl;
+      border: 1px solid var(--midlight-gray);
+    }
+
+    &__error {
+      color: var(--red-alert);
+      font-size: $font-size-md;
+      text-align: right;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
