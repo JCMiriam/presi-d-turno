@@ -9,7 +9,18 @@
     "types": ["node"],
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/*"],
+      "@routes/*": ["src/routes/*"],
+      "@sockets/*": ["src/sockets/*"],
+      "@state/*": ["src/state/*"],
+      "@types/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"],
+      "@shared": ["../shared/src"]
+    }
   },
   "include": ["src"]
 }

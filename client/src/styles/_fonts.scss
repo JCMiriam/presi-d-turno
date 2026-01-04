@@ -1,0 +1,111 @@
+@font-face {
+  font-family: 'MyFont';
+  src: url('/src/assets/fonts/MyFont-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MyFont';
+  src: url('/src/assets/fonts/MyFont-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MyFont';
+  src: url('/src/assets/fonts/MyFont-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* === Font Sizes === */
+$font-size-xs: 10px;
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+
+/* === Font Weights === */
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-bold: 700;
+
+$font-family-base: 'Roboto', sans-serif;
+$line-height-base: 1;
+
+/* === Base Typography === */
+%font-xs {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+}
+
+%font-xs-bold {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+}
+
+%font-sm {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+}
+
+%font-sm-bold {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+}
+
+%font-md {
+  font-size: $font-size-md;
+  font-weight: $font-weight-regular;
+}
+
+%font-md-bold {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+}
+
+%font-base {
+  font-size: $font-size-base;
+  font-weight: $font-weight-regular;
+}
+
+%font-base-bold {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+}
+
+%font-lg {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-regular;
+}
+
+%font-lg-bold {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+%font-xl {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-regular;
+}
+
+%font-xl-bold {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+%font-2xl {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-regular;
+}
+
+%font-2xl-bold {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+}
