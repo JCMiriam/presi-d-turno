@@ -1,26 +1,27 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { AvatarProps } from "./Avatar.types";
+import { computed } from 'vue'
+import type { AvatarProps } from './Avatar.types'
 
 const props = withDefaults(defineProps<AvatarProps>(), {
-  size: "md",
-  decorative: false
-});
+  size: 'md',
+  decorative: false,
+  variant: 'round',
+})
 
-const computedAlt = computed(() => (props.decorative ? "" : props.alt));
+const computedAlt = computed(() => (props.decorative ? '' : props.alt))
 
 const src = computed(() => {
-  const safeId = Number.isFinite(props.id) ? props.id : 0;
-  const clampedId = Math.min(41, Math.max(0, safeId));
-  const padded = clampedId.toString().padStart(2, "0");
-  return `/src/assets/images/avatars/avatar-${padded}.svg`;
-});
+  const safeId = Number.isFinite(props.id) ? props.id : 0
+  const clampedId = Math.min(41, Math.max(0, safeId))
+  const padded = clampedId.toString().padStart(2, '0')
+  return `/src/assets/images/avatars/avatar-${padded}.svg`
+})
 </script>
 
 <template>
   <img
     class="avatar"
-    :class="`avatar--${size}`"
+    :class="`avatar--${size} avatar--${variant}`"
     :src="src"
     :alt="computedAlt"
     loading="lazy"
@@ -29,5 +30,5 @@ const src = computed(() => {
 </template>
 
 <style scoped lang="scss">
-@use "./Avatar.styles.scss";
+@use './Avatar.styles.scss';
 </style>

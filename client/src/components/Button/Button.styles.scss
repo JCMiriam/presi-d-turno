@@ -1,6 +1,6 @@
-@use "@styles/variables.scss" as *;
-@use "@styles/colors.scss" as *;
-@use "@styles/fonts.scss" as *;
+@use '@styles/variables.scss' as *;
+@use '@styles/colors.scss' as *;
+@use '@styles/fonts.scss' as *;
 
 .button {
   display: inline-flex;
@@ -20,7 +20,9 @@
     max-height: fit-content;
     max-width: fit-content;
 
-    .text { height: 10px; }
+    .text {
+      height: 10px;
+    }
   }
 
   &.md {
@@ -32,7 +34,9 @@
     max-height: fit-content;
     max-width: fit-content;
 
-    .text { height: 16px; }
+    .text {
+      height: 16px;
+    }
   }
 
   &.lg {
@@ -44,7 +48,9 @@
     max-height: fit-content;
     max-width: fit-content;
 
-    .text { height: 16px; }
+    .text {
+      height: 16px;
+    }
   }
 
   &.solid {
@@ -52,27 +58,37 @@
 
     &.primary {
       background-color: var(--dark-gray);
-      &:hover { background-color: var(--middark-gray); }
+      &:hover {
+        background-color: var(--middark-gray);
+      }
     }
 
     &.secondary {
       background-color: var(--middle-gray);
-      &:hover { background-color: var(--middle-light-gray); }
+      &:hover {
+        background-color: var(--middle-light-gray);
+      }
     }
 
     &.danger {
       background-color: var(--red-alert);
-      &:hover { background-color: var(--light-red-alert); }
+      &:hover {
+        background-color: var(--light-red-alert);
+      }
     }
 
     &.alert {
       background-color: var(--yellow-sand);
-      &:hover { background-color: var(--light-yellow-sand); }
+      &:hover {
+        background-color: var(--light-yellow-sand);
+      }
     }
 
     &.success {
       background-color: var(--green-water);
-      &:hover { background-color: var(--light-green-water); }
+      &:hover {
+        background-color: var(--light-green-water);
+      }
     }
   }
 
@@ -165,5 +181,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

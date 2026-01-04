@@ -1,2 +1,2 @@
-export { CreateUserPage } from "./CreateUser";
-export { LobbyPage } from "./Lobby";
+export { CreateUserPage } from './CreateUser'
+export { LobbyPage } from './Lobby'

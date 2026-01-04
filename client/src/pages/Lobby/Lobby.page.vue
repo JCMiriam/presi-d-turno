@@ -1,151 +1,131 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-import { socket } from "@socket";
-import { SOCKET_EVENTS, type RoomState, type JoinRoomPayload } from "@shared";
+import { socket } from '@sockets/socket'
+import { SOCKET_EVENTS, type RoomState, type JoinRoomPayload } from '@pdt/shared'
 
-import { userState, clearUser } from "../../state/index";
-import { useRoomStore } from "@stores/room";
+import { userState, clearUser } from '../../state/index'
+import { useRoomStore } from '@stores/room'
 
-import { ref } from "vue";
+const inviteStatus = ref<'idle' | 'copied' | 'error'>('idle')
+const route = useRoute()
+const router = useRouter()
+const roomStore = useRoomStore()
 
-const inviteStatus = ref<"idle" | "copied" | "error">("idle");
+const mode = computed<'join' | 'create'>(() => {
+  const m = route.query.mode
+  return m === 'join' ? 'join' : 'create'
+})
+
+const roomId = computed<string | null>(() => {
+  const r = route.query.roomId
+  return typeof r === 'string' && r.trim() ? r.trim().toUpperCase() : null
+})
 
 const inviteUrl = computed(() => {
-  // Usamos el roomId "real" si ya llegó del server; si no, el de la query/fallback
-  const id = roomStore.roomId ?? roomId.value;
-
-  // Base URL del front actual (en Render será https://xxxx.onrender.com)
-  const base = window.location.origin;
-
-  // Queremos que el invitado caiga en CreateUser con ?roomId=...
-  // (asumiendo que CreateUser está en "/")
-  return `${base}/?roomId=${encodeURIComponent(id)}`;
-});
+  const id = roomStore.roomId ?? roomId.value ?? ''
+  const base = window.location.origin
+  return `${base}/?roomId=${encodeURIComponent(id)}`
+})
 
 async function copyInviteLink() {
   try {
-    await navigator.clipboard.writeText(inviteUrl.value);
-    inviteStatus.value = "copied";
-    window.setTimeout(() => (inviteStatus.value = "idle"), 1500);
+    await navigator.clipboard.writeText(inviteUrl.value)
+    inviteStatus.value = 'copied'
+    window.setTimeout(() => (inviteStatus.value = 'idle'), 1500)
   } catch {
-    // Fallback por si clipboard API falla (algunos navegadores / contextos)
     try {
-      const ta = document.createElement("textarea");
-      ta.value = inviteUrl.value;
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
+      const ta = document.createElement('textarea')
+      ta.value = inviteUrl.value
+      ta.style.position = 'fixed'
+      ta.style.left = '-9999px'
+      document.body.appendChild(ta)
+      ta.focus()
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
 
-      inviteStatus.value = "copied";
-      window.setTimeout(() => (inviteStatus.value = "idle"), 1500);
+      inviteStatus.value = 'copied'
+      window.setTimeout(() => (inviteStatus.value = 'idle'), 1500)
     } catch {
-      inviteStatus.value = "error";
-      window.setTimeout(() => (inviteStatus.value = "idle"), 2000);
+      inviteStatus.value = 'error'
+      window.setTimeout(() => (inviteStatus.value = 'idle'), 2000)
     }
   }
 }
 
-
-/**
- * Routing
- */
-const route = useRoute();
-const router = useRouter();
-
-/**
- * Store
- */
-const roomStore = useRoomStore();
-
-/**
- * Query params
- * - roomId: si vienes por enlace de invitación
- * - mode: "join" o "create"
- */
-const mode = computed<"join" | "create">(() => {
-  const m = route.query.mode;
-  return m === "join" ? "join" : "create";
-});
-
-const roomId = computed<string>(() => {
-  const r = route.query.roomId;
-  // Para development, ponemos un fallback estable.
-  // En create real, el server generará un id y nos lo devolverá.
-  return typeof r === "string" && r.trim() ? r.trim() : "demo";
-});
-
-/**
- * Helpers
- */
 function avatarSrc(id: number): string {
-  const padded = id.toString().padStart(2, "0");
-  return `/src/assets/images/avatars/avatar-${padded}.svg`;
+  const padded = id.toString().padStart(2, '0')
+  return `/src/assets/images/avatars/avatar-${padded}.svg`
 }
 
 function backToCreateUser() {
-  const currentRoomId = typeof route.query.roomId === "string" ? route.query.roomId : undefined;
-  clearUser();
-  roomStore.reset();
+  const currentRoomId = typeof route.query.roomId === 'string' ? route.query.roomId : undefined
+  clearUser()
+  roomStore.reset()
 
   router.replace({
-    name: "user-setup",
-    query: currentRoomId ? { roomId: currentRoomId } : {}
-  });
+    name: 'user-setup',
+    query: currentRoomId ? { roomId: currentRoomId } : {},
+  })
 }
 
-/**
- * Socket wiring
- */
+const hasJoined = ref(false)
+
 function handleRoomState(snapshot: RoomState) {
-  roomStore.applySnapshot(snapshot);
+  roomStore.applySnapshot(snapshot)
 }
 
 function joinRoom() {
-  if (!userState.user) return;
+  if (!userState.user) return
+  if (!roomId.value) return
+  if (hasJoined.value) return
+
+  hasJoined.value = true
 
   const payload: JoinRoomPayload = {
     roomId: roomId.value,
     username: userState.user.username,
-    avatarId: userState.user.avatarId
-  };
+    avatarId: userState.user.avatarId,
+  }
 
-  socket.emit(SOCKET_EVENTS.JOIN_ROOM, payload);
+  socket.emit(SOCKET_EVENTS.JOIN_ROOM, payload)
+}
+
+function handleConnect() {
+  if (socket.id) roomStore.setMyId(socket.id)
+  joinRoom()
 }
 
 onMounted(() => {
   // Guard: si no hay usuario creado, no puedes estar en lobby
   if (!userState.user) {
-    router.replace({ name: "user-setup", query: route.query.roomId ? { roomId: String(route.query.roomId) } : {} });
-    return;
+    router.replace({
+      name: 'user-setup',
+      query: route.query.roomId ? { roomId: String(route.query.roomId) } : {},
+    })
+    return
   }
 
-  // Listeners
-  socket.on(SOCKET_EVENTS.ROOM_STATE, handleRoomState);
-
-  // Guardamos mi id cuando conecte, y hacemos join
-  socket.on("connect", () => {
-    // socket.id puede ser undefined momentáneamente, pero tras connect suele venir
-    if (socket.id) roomStore.setMyId(socket.id);
-    joinRoom();
-  });
-
-  // Si ya estaba conectada (navegación interna), haz join directamente
-  if (socket.connected) {
-    if (socket.id) roomStore.setMyId(socket.id);
-    joinRoom();
+  // Guard: si no hay roomId, vuelve atrás (evita "demo" y salas fantasmas)
+  if (!roomId.value) {
+    router.replace({ name: 'user-setup' })
+    return
   }
-});
+
+  socket.on(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
+  socket.on('connect', handleConnect)
+
+  // Si ya estaba conectada (navegación interna), actúa como si conectase
+  if (socket.connected) handleConnect()
+})
 
 onBeforeUnmount(() => {
-  socket.off(SOCKET_EVENTS.ROOM_STATE, handleRoomState);
-  socket.off("connect");
-});
+  hasJoined.value = false
+  socket.off(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
+  socket.off('connect', handleConnect)
+})
 </script>
 
 <template>
@@ -154,36 +134,37 @@ onBeforeUnmount(() => {
       <div>
         <h1>Lobby</h1>
         <p class="sub">
-          Modo: <strong>{{ mode }}</strong> · Sala: <strong>{{ roomStore.roomId ?? roomId }}</strong> · v{{ roomStore.version }}
+          Modo: <strong>{{ mode }}</strong> · Sala:
+          <strong>{{ roomStore.roomId ?? roomId }}</strong> · v{{ roomStore.version }}
         </p>
       </div>
 
-      <button class="ghost" type="button" @click="backToCreateUser">
-        Volver
-      </button>
+      <button class="ghost" type="button" @click="backToCreateUser">Volver</button>
     </header>
 
     <div class="header-actions">
-        <button class="ghost" type="button" @click="copyInviteLink">
-            {{ inviteStatus === "copied"
-            ? "¡Copiado! ✅"
-            : inviteStatus === "error"
-                ? "No se pudo copiar 😅"
-                : "Invitar jugadores"
-            }}
-        </button>
+      <button class="ghost" type="button" @click="copyInviteLink">
+        {{
+          inviteStatus === 'copied'
+            ? '¡Copiado! ✅'
+            : inviteStatus === 'error'
+              ? 'No se pudo copiar 😅'
+              : 'Invitar jugadores'
+        }}
+      </button>
 
-        <button class="ghost" type="button" @click="backToCreateUser">
-            Volver
-        </button>
+      <button class="ghost" type="button" @click="backToCreateUser">Volver</button>
     </div>
-
 
     <section class="card">
       <h2 class="card-title">Tu usuario</h2>
 
       <div v-if="userState.user" class="me">
-        <img class="avatar-img" :src="avatarSrc(userState.user.avatarId)" :alt="`Avatar ${userState.user.avatarId}`" />
+        <img
+          class="avatar-img"
+          :src="avatarSrc(userState.user.avatarId)"
+          :alt="`Avatar ${userState.user.avatarId}`"
+        />
         <div>
           <div class="me-name">{{ userState.user.username }}</div>
           <div class="me-meta">Avatar #{{ userState.user.avatarId }}</div>
@@ -245,6 +226,11 @@ onBeforeUnmount(() => {
 .sub {
   margin: 6px 0 0;
   opacity: 0.8;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .card {

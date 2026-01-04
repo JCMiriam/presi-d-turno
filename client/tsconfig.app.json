@@ -21,6 +21,8 @@
       "@components/*": ["src/components/*"],
       "@stores": ["src/stores/index.ts"],
       "@stores/*": ["src/stores/*"],
+      "@sockets": ["src/sockets/index.ts"],
+      "@sockets/*": ["src/sockets/*"],
       "@styles": ["src/styles/index.ts"],
       "@styles/*": ["src/styles/*"],
       "@types": ["src/types/index.ts"],

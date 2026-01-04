@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import type { ButtonProps } from "./Button.types";
+import { computed, useAttrs } from 'vue'
+import type { ButtonProps } from './Button.types'
 
-
-const attrs = useAttrs();
-const isIconOnly = computed(() => Boolean(props.icon) && !props.text);
+const attrs = useAttrs()
+const isIconOnly = computed(() => Boolean(props.icon) && !props.text)
 
 const props = withDefaults(defineProps<ButtonProps>(), {
-  iconPosition: "left",
-  size: "md",
+  iconPosition: 'left',
+  size: 'md',
   disabled: false,
   loading: false,
-  iconShape: "round",
-  type: "button",
-  appearance: "solid",
+  iconShape: 'round',
+  type: 'button',
+  appearance: 'solid',
 })
 
 const classes = computed(() => ({
@@ -21,19 +20,13 @@ const classes = computed(() => ({
   [props.variant]: true,
   [props.appearance]: true,
   [props.size]: true,
-  "icon-only": isIconOnly.value && props.iconShape !== "round",
-  "icon-round": isIconOnly.value && props.iconShape === "round"
+  'icon-only': isIconOnly.value && props.iconShape !== 'round',
+  'icon-round': isIconOnly.value && props.iconShape === 'round',
 }))
-
 </script>
 
 <template>
-  <button
-    :type="props.type"
-    :class="classes"
-    :disabled="disabled || loading"
-    v-bind="attrs"
-  >
+  <button :type="props.type" :class="classes" :disabled="disabled || loading" v-bind="attrs">
     <span v-if="loading" class="loader" aria-hidden="true"></span>
 
     <template v-else>
@@ -61,5 +54,5 @@ const classes = computed(() => ({
 </template>
 
 <style scoped lang="scss">
-  @use "./Button.styles.scss";
+@use './Button.styles.scss';
 </style>

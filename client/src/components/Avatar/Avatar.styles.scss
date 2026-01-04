@@ -1,8 +1,17 @@
+@use '@styles/variables' as *;
+
 .avatar {
   display: inline-block;
   object-fit: cover;
-  border-radius: 100%;
   user-select: none;
+
+  &--round {
+    border-radius: 100%;
+  }
+
+  &--square {
+    border-radius: $radius-sm;
+  }
 
   &--xs {
     width: 24px;
@@ -12,16 +21,20 @@
   &--sm {
     width: 32px;
     height: 32px;
-    }
+  }
 
-    &--md {
+  &--md {
     width: 40px;
     height: 40px;
-    }
+  }
 
-    &--lg {
-    width: 56px;
-    height: 56px;
-    }
+  &--lg {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  &--xl {
+    width: 80px;
+    height: 80px;
+  }
 }
-

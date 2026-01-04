@@ -1,12 +1,12 @@
-import express from "express";
-import cors from "cors";
-import { healthRouter } from "@routes/index.js";
+import express from 'express'
+import cors from 'cors'
+import { healthRouter } from '@routes/index.js'
 
 export const createApp = () => {
-  const app = express();
+  const app = express()
 
-  app.use(cors());
-  app.use(healthRouter);
+  app.use(cors())
+  app.use(healthRouter)
 
-  return app;
+  return app
 }

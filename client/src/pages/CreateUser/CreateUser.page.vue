@@ -1,131 +1,165 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { AvatarGallery, Button } from "@components/index";
+import { computed, ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { socket } from '@sockets/socket'
+import { AVATARS } from '@data'
 
-import { setUser } from "../../state/index";
+import { AvatarGallery } from './Components/AvatarGallery'
+import { CreateUserModal } from './Components/CreateUserModal'
 
-const route = useRoute();
-const router = useRouter();
+import { setUser } from '../../state/index'
+
+import { SOCKET_EVENTS } from '@pdt/shared'
+
+console.log('SOCKET_EVENTS', SOCKET_EVENTS)
+
+const route = useRoute()
+const router = useRouter()
 
 const roomIdFromQuery = computed(() => {
-  const value = route.query.roomId;
-  return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
-});
+  const value = route.query.roomId
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null
+})
 
-const mode = computed<"create" | "join">(() =>
-  roomIdFromQuery.value ? "join" : "create"
-);
+const mode = computed<'create' | 'join'>(() => (roomIdFromQuery.value ? 'join' : 'create'))
+const submitLabel = computed(() => (mode.value === 'join' ? 'Unirse a la sala' : 'Crear sala'))
 
-const submitLabel = computed(() =>
-  mode.value === "join" ? "Unirse a la sala" : "Crear sala"
-);
+const username = ref('')
+const selectedAvatarId = ref<number | null>(null)
+const error = ref<string | null>(null)
+const isGalleryOpen = ref(false)
 
-const username = ref("");
-const selectedAvatarId = ref<number | null>(0);
-const error = ref<string | null>(null);
+// evita dobles submits
+const isSubmitting = ref(false)
 
+const getRandomAvatarID = (): number => {
+  const randomIndex = Math.floor(Math.random() * AVATARS.length)
+  return AVATARS[randomIndex]!.id
+}
+
+onMounted(() => {
+  if (selectedAvatarId.value == null) {
+    selectedAvatarId.value = getRandomAvatarID()
+  }
+})
 
 function validate(): boolean {
-  const name = username.value.trim();
+  const name = username.value.trim()
 
   if (!name) {
-    error.value = "Introduce un nombre de usuario.";
-    return false;
+    error.value = 'Introduce un nombre de usuario.'
+    return false
   }
 
   if (name.length > 18) {
-    error.value = "El nombre no puede tener más de 18 caracteres.";
-    return false;
+    error.value = 'El nombre no puede tener más de 18 caracteres.'
+    return false
   }
 
   if (!selectedAvatarId.value) {
-    error.value = "Selecciona un avatar.";
-    return false;
+    error.value = 'Selecciona un avatar.'
+    return false
   }
 
-  error.value = null;
-  return true;
+  error.value = null
+  return true
 }
 
-
 function onSubmit() {
-  if (!validate()) return;
+  if (!validate() || isSubmitting.value) return
 
-  // Guardamos usuario en estado global
-  setUser({
+  isSubmitting.value = true
+
+  const user = {
     username: username.value.trim(),
-    avatarId: selectedAvatarId.value!
-  });
+    avatarId: selectedAvatarId.value!,
+  }
 
-  // Navegamos al lobby
-  router.push({
-    name: "lobby",
-    query: {
-      roomId: roomIdFromQuery.value ?? undefined,
-      mode: mode.value
+  // guardamos identidad local (ok)
+  setUser(user)
+
+  // ⚠️ IMPORTANTE: aquí es donde realmente creas/te unes a la sala en el server
+  if (mode.value === 'create') {
+    socket.emit(SOCKET_EVENTS.CREATE_ROOM, user, (res) => {
+      isSubmitting.value = false
+
+      if (!res || !res.ok) {
+        error.value = 'No se pudo crear la sala. Inténtalo de nuevo.'
+        return
+      }
+
+      router.push({
+        name: 'lobby',
+        query: {
+          roomId: res.roomId,
+          mode: 'create',
+        },
+      })
+    })
+    return
+  }
+
+  // join
+  const roomId = roomIdFromQuery.value?.trim().toUpperCase() ?? null
+  if (!roomId) {
+    isSubmitting.value = false
+    error.value = 'El enlace de sala no es válido.'
+    return
+  }
+
+  socket.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, ...user }, (res) => {
+    isSubmitting.value = false
+
+    if (!res || !res.ok) {
+      error.value =
+        res?.error === 'ROOM_NOT_FOUND'
+          ? 'Esa sala no existe (o ya ha caducado).'
+          : res?.error === 'ROOM_ID_INVALID'
+            ? 'El id de la sala no es válido.'
+            : 'No se pudo unir a la sala. Inténtalo de nuevo.'
+      return
     }
-  });
+
+    router.push({
+      name: 'lobby',
+      query: {
+        roomId,
+        mode: 'join',
+      },
+    })
+  })
+}
+
+function openGallery() {
+  isGalleryOpen.value = true
+}
+
+function closeGallery() {
+  isGalleryOpen.value = false
 }
 </script>
 
 <template>
   <main class="create-user">
-    <header class="header">
-      <h1>Presi d Turno</h1>
-      <p class="subtitle">
-        {{ mode === "join"
-          ? "Te estás uniendo a una sala existente"
-          : "Crea una nueva sala para jugar"
-        }}
-      </p>
-    </header>
+    <CreateUserModal
+      v-model:username="username"
+      :avatar-id="selectedAvatarId ?? 0"
+      :error="error"
+      :mode="mode"
+      :room-id="roomIdFromQuery"
+      :submit-label="submitLabel"
+      @submit="onSubmit"
+      @avatarClick="openGallery"
+    />
 
-    <Button
-      icon="picture"
-      icon-position="left"
-      text="Guardar"
-      variant="primary"
-      appearance="solid"
-      color="pure-white"
-    ></Button>
-
-    <form class="form" @submit.prevent="onSubmit">
-      <!-- Username -->
-      <label class="field">
-        <span>Nombre de usuario</span>
-        <input
-          v-model="username"
-          type="text"
-          placeholder="Ej: Dubu"
-          maxlength="18"
-        />
-      </label>
-
-      <!-- Avatars -->
-      <AvatarGallery v-model="selectedAvatarId" />
-
-
-
-      <!-- Error -->
-      <p v-if="error" class="error">
-        {{ error }}
-      </p>
-
-      <!-- Submit -->
-      <button type="submit" class="submit">
-        {{ submitLabel }}
-      </button>
-    </form>
-
-    <!-- Room hint -->
-    <footer v-if="roomIdFromQuery" class="room-hint">
-      Sala detectada:
-      <code>{{ roomIdFromQuery }}</code>
-    </footer>
+    <AvatarGallery
+      v-model="selectedAvatarId"
+      v-model:open="isGalleryOpen"
+      :size="'lg'"
+      :disabled="false"
+      @close="closeGallery"
+    />
   </main>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

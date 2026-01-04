@@ -1,1 +1,1 @@
-export { default as CreateUserPage } from "./CreateUser.page.vue";
+export { default as CreateUserPage } from './CreateUser.page.vue'
