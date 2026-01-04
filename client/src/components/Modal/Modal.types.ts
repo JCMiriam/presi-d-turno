@@ -4,6 +4,7 @@ export type ModalProps = {
   title?: string
   subtitle?: string
   hasLogo?: boolean
+  scrollable?: boolean
   modelValue: boolean
   hasCloseButton?: boolean
   closeOnOverlay?: boolean

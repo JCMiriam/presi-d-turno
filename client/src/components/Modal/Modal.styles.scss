@@ -31,6 +31,33 @@
     &--xl {
       width: min(92vw, 40rem);
     }
+
+    &--scrollable {
+      max-height: 90dvh;
+      display: flex;
+      flex-direction: column;
+
+      .modal__content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        mask-image: linear-gradient(
+          to bottom,
+          black 0%,
+          black calc(100% - 2.5rem),
+          transparent 100%
+        );
+
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black 0%,
+          black calc(100% - 2.5rem),
+          transparent 100%
+        );
+      }
+    }
   }
 
   &__header {
@@ -88,7 +115,7 @@
 
   &__buttons {
     padding: 1.5rem;
-    padding-top: 0;
+    padding-top: 1rem;
     display: flex;
     justify-content: flex-end;
     gap: 1rem;

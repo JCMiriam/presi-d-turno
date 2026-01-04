@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<ModalProps>(), {
   hasCloseButton: true,
   closeOnOverlay: true,
   closeOnEsc: true,
+  scrollable: false,
   size: 'md',
   ariaLabel: 'Modal dialog',
   submitText: 'Guardar',
@@ -117,7 +118,7 @@ onBeforeUnmount(() => {
         <div
           ref="panelRef"
           class="modal__panel"
-          :class="`modal__panel--${size}`"
+          :class="{ 'modal__panel--scrollable': scrollable, [`modal__panel--${size}`]: true }"
           role="dialog"
           aria-modal="true"
           :aria-label="ariaLabel"
