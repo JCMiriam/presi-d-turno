@@ -60,17 +60,6 @@ function avatarSrc(id: number): string {
   return `/src/assets/images/avatars/avatar-${padded}.svg`
 }
 
-function backToCreateUser() {
-  const currentRoomId = typeof route.query.roomId === 'string' ? route.query.roomId : undefined
-  clearUser()
-  roomStore.reset()
-
-  router.replace({
-    name: 'user-setup',
-    query: currentRoomId ? { roomId: currentRoomId } : {},
-  })
-}
-
 const hasJoined = ref(false)
 
 function handleRoomState(snapshot: RoomState) {
@@ -138,8 +127,6 @@ onBeforeUnmount(() => {
           <strong>{{ roomStore.roomId ?? roomId }}</strong> · v{{ roomStore.version }}
         </p>
       </div>
-
-      <button class="ghost" type="button" @click="backToCreateUser">Volver</button>
     </header>
 
     <div class="header-actions">
@@ -152,8 +139,6 @@ onBeforeUnmount(() => {
               : 'Invitar jugadores'
         }}
       </button>
-
-      <button class="ghost" type="button" @click="backToCreateUser">Volver</button>
     </div>
 
     <section class="card">
