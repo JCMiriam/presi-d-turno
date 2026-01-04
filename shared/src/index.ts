@@ -7,7 +7,7 @@ export const SOCKET_EVENTS = {
 export type JoinRoomPayload = {
   roomId: string;
   username: string;
-  avatarId: string;
+  avatarId: number;
 };
 
 export type RoomStatePayload = {
@@ -23,3 +23,22 @@ export interface ServerToClientEvents {
   [SOCKET_EVENTS.ROOM_STATE]: (payload: RoomStatePayload) => void;
   [SOCKET_EVENTS.ERROR]: (message: string) => void;
 }
+
+export type Player = {
+  id: string;
+  username: string;
+  avatarId: number;
+  points: number;
+};
+
+export type RoomState = {
+  roomId: string;
+  version: number;
+  hostId: string;
+  presiId: string;
+  players: Player[];
+  status: "lobby" | "in_game" | "finished";
+  pointsToWin: number;
+  round: number;
+};
+

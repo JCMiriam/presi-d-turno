@@ -1,0 +1,169 @@
+@use "@styles/variables.scss" as *;
+@use "@styles/colors.scss" as *;
+@use "@styles/fonts.scss" as *;
+
+.button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &.sm {
+    @extend %font-sm-bold;
+    border-radius: $radius-sm;
+    padding: 6px 12px;
+    min-height: 30px;
+    min-width: 30px;
+    max-height: fit-content;
+    max-width: fit-content;
+
+    .text { height: 10px; }
+  }
+
+  &.md {
+    @extend %font-base-bold;
+    border-radius: $radius-md;
+    min-height: 40px;
+    min-width: 40px;
+    padding: 10px 24px;
+    max-height: fit-content;
+    max-width: fit-content;
+
+    .text { height: 16px; }
+  }
+
+  &.lg {
+    @extend %font-lg-bold;
+    border-radius: $radius-md;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 32px;
+    max-height: fit-content;
+    max-width: fit-content;
+
+    .text { height: 16px; }
+  }
+
+  &.solid {
+    color: var(--pure-white);
+
+    &.primary {
+      background-color: var(--dark-gray);
+      &:hover { background-color: var(--middark-gray); }
+    }
+
+    &.secondary {
+      background-color: var(--middle-gray);
+      &:hover { background-color: var(--middle-light-gray); }
+    }
+
+    &.danger {
+      background-color: var(--red-alert);
+      &:hover { background-color: var(--light-red-alert); }
+    }
+
+    &.alert {
+      background-color: var(--yellow-sand);
+      &:hover { background-color: var(--light-yellow-sand); }
+    }
+
+    &.success {
+      background-color: var(--green-water);
+      &:hover { background-color: var(--light-green-water); }
+    }
+  }
+
+  &.outline {
+    background-color: transparent;
+
+    &.primary {
+      @include border-shadow($border-md, var(--dark-gray));
+      color: var(--dark-gray);
+
+      &:hover {
+        @include border-shadow($border-md, var(--middark-gray));
+        border-color: var(--middark-gray);
+        background-color: $background-middark-gray--hover;
+      }
+    }
+
+    &.secondary {
+      @include border-shadow($border-md, var(--middle-gray));
+      color: var(--middle-gray);
+
+      &:hover {
+        @include border-shadow($border-md, var(--middle-light-gray));
+        color: var(--middark-gray);
+        background-color: $background-middle-light-gray--hover;
+      }
+    }
+
+    &.danger {
+      @include border-shadow($border-md, var(--red-alert));
+      color: var(--red-alert);
+
+      &:hover {
+        @include border-shadow($border-md, var(--light-red-alert));
+        color: var(--dark-red-alert);
+        background-color: $background-light-red-alert--hover;
+      }
+    }
+
+    &.alert {
+      @include border-shadow($border-md, var(--yellow-sand));
+      color: var(--yellow-sand);
+
+      &:hover {
+        @include border-shadow($border-md, var(--light-yellow-sand));
+        color: var(--dark-yellow-sand);
+        background-color: $background-light-yellow-sand--hover;
+      }
+    }
+
+    &.success {
+      @include border-shadow($border-md, var(--green-water));
+      color: var(--light-green-water);
+
+      &:hover {
+        @include border-shadow($border-md, var(--light-green-water));
+        color: var(--dark-green-water);
+        background-color: $background-light-green-water--hover;
+      }
+    }
+  }
+
+  &.icon-only {
+    padding: 6px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &.icon-round {
+    padding: 6px;
+    border-radius: 100%;
+    aspect-ratio: 1;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .loader {
+    width: 1em;
+    height: 1em;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,88 @@
+:root {
+    /* === Grayscale === */
+    --pure-black: #000000;
+    --dark-gray: #121920;
+    --middark-gray: #2C3943;
+    --middle-gray: #4B5F70;
+    --middle-light-gray: #5B7184;
+    --midlight-gray: #C2D3E1;
+    --light-gray: #E6EEF5;
+    --pure-white: #ffffff;
+
+    /* === Main colors === */
+    --primary-dark: #1D2831;
+    --light-primary-dark: #2e3e4c;
+
+    --dark-green-water: #149980;
+    --green-water: #54B3A2;
+    --light-green-water: #62c6b4;
+
+    --dark-red-alert: #C52C2C;
+    --red-alert: #E94444;
+    --light-red-alert: #FF7575;
+
+    --dark-brown-earth: #BC582A;
+    --brown-earth: #D18647;
+    --light-brown-earth: #FEBA9D;
+
+    --dark-yellow-sand: #E0861A;
+    --yellow-sand: #FFA73E;
+    --light-yellow-sand: #FEB865;
+}
+
+$background-pure-white--hover: rgba(255, 255, 255, 0.3);
+$background-middark-gray--hover: rgba(44, 57, 67, 0.3);
+$background-middle-light-gray--hover: rgba(91, 113, 132, 0.3);
+$background-light-red-alert--hover: rgba(255, 117, 117, 0.3);
+$background-light-yellow-sand--hover: rgba(254, 184, 101, 0.3);
+$background-light-green-water--hover: rgba(98, 198, 180, 0.3);
+
+$colors: (
+    pure-black: var(--pure-black),
+    dark-gray: var(--dark-gray),
+    middark-gray: var(--middark-gray),
+    middle-gray: var(--middle-gray),
+    middle-light-gray: var(--middle-light-gray),
+    midlight-gray: var(--midlight-gray),
+    light-gray: var(--light-gray),
+    pure-white: var(--pure-white),
+
+    primary-dark: var(--primary-dark),
+    light-primary-dark: var(--light-primary-dark),
+
+    dark-green-water: var(--dark-green-water),
+    green-water: var(--green-water),
+    light-green-water: var(--light-green-water),
+
+    dark-red-alert: var(--dark-red-alert),
+    red-alert: var(--red-alert),
+    light-red-alert: var(--light-red-alert),
+
+    dark-brown-earth: var(--dark-brown-earth),
+    brown-earth: var(--brown-earth),
+    light-brown-earth: var(--light-brown-earth),
+
+    dark-yellow-sand: var(--dark-yellow-sand),
+    yellow-sand: var(--yellow-sand),
+    light-yellow-sand: var(--light-yellow-sand)
+);
+
+$hover-backgrounds: (
+    pure-white: rgba(255, 255, 255, 0.3),
+    middark-gray: rgba(44, 57, 67, 0.3),
+    middle-light-gray: rgba(91, 113, 132, 0.3),
+    light-red-alert: rgba(255, 117, 117, 0.3),
+    light-yellow-sand: rgba(254, 184, 101, 0.3),
+    light-green-water: rgba(98, 198, 180, 0.3)
+);
+
+@each $name, $value in $colors {
+    .text-#{$name} { color: #{$value}; }
+    .bg-#{$name} { background-color: #{$value}; }
+    .border-#{$name} { border-color: #{$value}; }
+    .fill-#{$name} { fill: #{$value}; }
+}
+
+@each $name, $value in $hover-backgrounds {
+    .bg-hover-#{$name}:hover { background-color: #{$value}; }
+}
