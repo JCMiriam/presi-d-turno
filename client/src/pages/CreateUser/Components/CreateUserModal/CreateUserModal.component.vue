@@ -34,8 +34,8 @@ const avatarClick = () => emit('avatarClick')
 
 <template>
   <Modal
-    :modelValue="open"
     size="md"
+    :modelValue="open"
     :title="title"
     :subtitle="subtitle"
     :hasCloseButton="false"
