@@ -1,6 +1,7 @@
 @use '@styles/variables.scss' as *;
 @use '@styles/colors.scss' as *;
 @use '@styles/fonts.scss' as *;
+@use '@styles/breakpoints.scss' as *;
 
 .create-user-modal {
   z-index: 10;
@@ -9,9 +10,13 @@
 
   &__avatar {
     position: relative;
-    margin-top: -5rem;
     width: fit-content;
     align-self: flex-end;
+    margin-top: -3rem;
+
+    @include respond(xs) {
+      margin-top: -5rem;
+    }
 
     &__edit-button {
       position: absolute;

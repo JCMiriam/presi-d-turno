@@ -16,12 +16,12 @@ const open = computed(() => true)
 
 const title = computed(() => {
   if (props.mode === 'join') return props.roomId ? `#${props.roomId}` : 'Accediendo por invitación…'
-  return 'Elige un nombre y una imagen'
+  return 'Crea tu usuario'
 })
 
 const subtitle = computed(() => {
   if (props.mode === 'join') return props.roomId ? `ID de la partida` : 'Accediendo por invitación…'
-  return 'Elige un nombre y una imagen'
+  return ''
 })
 
 const onInput = (e: Event) => {
