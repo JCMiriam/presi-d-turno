@@ -130,8 +130,8 @@ onBeforeUnmount(() => {
               </div>
 
               <div class="modal__header--content">
-                <span v-if="title" class="modal__header--title">{{ title }}</span>
                 <span v-if="subtitle" class="modal__header--subtitle">{{ subtitle }}</span>
+                <span v-if="title" class="modal__header--title">{{ title }}</span>
               </div>
             </div>
           </header>
