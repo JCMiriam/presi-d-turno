@@ -11,8 +11,6 @@ import { setUser } from '../../state/index'
 
 import { SOCKET_EVENTS } from '@pdt/shared'
 
-console.log('SOCKET_EVENTS', SOCKET_EVENTS)
-
 const route = useRoute()
 const router = useRouter()
 
