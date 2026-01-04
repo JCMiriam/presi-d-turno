@@ -11,8 +11,6 @@ import { setUser } from '../../state/index'
 
 import { SOCKET_EVENTS } from '@pdt/shared'
 
-console.log('SOCKET_EVENTS', SOCKET_EVENTS)
-
 const route = useRoute()
 const router = useRouter()
 
@@ -47,17 +45,17 @@ function validate(): boolean {
   const name = username.value.trim()
 
   if (!name) {
-    error.value = 'Introduce un nombre de usuario.'
+    error.value = '*Introduce un nombre de usuario.'
     return false
   }
 
   if (name.length > 18) {
-    error.value = 'El nombre no puede tener más de 18 caracteres.'
+    error.value = '*El nombre no puede tener más de 18 caracteres.'
     return false
   }
 
   if (!selectedAvatarId.value) {
-    error.value = 'Selecciona un avatar.'
+    error.value = '*Selecciona un avatar.'
     return false
   }
 

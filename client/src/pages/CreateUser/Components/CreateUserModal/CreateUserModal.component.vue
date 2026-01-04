@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Modal, Avatar } from '@components'
+import { Modal, Avatar, Icon } from '@components'
 
-type Mode = 'create' | 'join'
+import type { CreateUserModalProps } from './CreateUserModal.types'
 
-const props = defineProps<{
-  username: string
-  avatarId: number
-  error: string | null
-  mode: Mode
-  roomId: string | null
-  submitLabel: string
-}>()
+const props = defineProps<CreateUserModalProps>()
 
 const emit = defineEmits<{
   (e: 'update:username', value: string): void
@@ -19,12 +12,16 @@ const emit = defineEmits<{
   (e: 'avatarClick'): void
 }>()
 
-const open = computed(() => true) // siempre abierto (literalmente)
+const open = computed(() => true)
 
-const title = computed(() => (props.mode === 'join' ? 'Unirse a la sala' : 'Crear sala'))
+const title = computed(() => {
+  if (props.mode === 'join') return props.roomId ? `#${props.roomId}` : 'Accediendo por invitación…'
+  return 'Crea tu usuario'
+})
+
 const subtitle = computed(() => {
-  if (props.mode === 'join') return props.roomId ? `Sala: ${props.roomId}` : 'Accediendo por invitación…'
-  return 'Elige un nombre y una imagen'
+  if (props.mode === 'join') return props.roomId ? `ID de la partida` : 'Accediendo por invitación…'
+  return ''
 })
 
 const onInput = (e: Event) => {
@@ -33,9 +30,6 @@ const onInput = (e: Event) => {
 
 const submit = () => emit('submit')
 const avatarClick = () => emit('avatarClick')
-
-// para que NO se cierre nunca desde el Modal
-const noopCancel = () => {}
 </script>
 
 <template>
@@ -47,57 +41,54 @@ const noopCancel = () => {}
     :hasCloseButton="false"
     :closeOnOverlay="false"
     :closeOnEsc="false"
-    :onCancel="noopCancel"
     :onSubmit="submit"
     :submitText="submitLabel"
   >
     <div class="create-user-modal">
-      <button type="button" class="create-user-modal__avatar" @click="avatarClick" aria-label="Cambiar avatar">
-        <Avatar :id="avatarId" alt="Tu avatar" size="lg" variant="square" decorative />
+      <button
+        type="button"
+        class="create-user-modal__avatar"
+        @click="avatarClick"
+        aria-label="Cambiar avatar"
+      >
+        <Avatar :id="avatarId" alt="Tu avatar" size="xl" decorative />
+        <div class="create-user-modal__avatar__edit-button">
+          <Icon icon="pencil" :size="20" color="pure-white"></Icon>
+        </div>
       </button>
 
-      <label class="create-user-modal__label" for="username">Nombre de usuario</label>
-      <input
-        id="username"
-        class="create-user-modal__input"
-        type="text"
-        :value="username"
-        autocomplete="off"
-        maxlength="18"
-        placeholder="Escribe tu nombre…"
-        @input="onInput"
-        @keydown.enter.prevent="submit"
-      />
+      <div class="create-user-modal__content">
+        <div class="create-user-modal__content__username">
+          <label class="create-user-modal__content__label" for="username">Nombre de usuario</label>
+          <input
+            id="username"
+            class="create-user-modal__content__input"
+            type="text"
+            :value="username"
+            autocomplete="off"
+            maxlength="18"
+            placeholder="Escribe tu nombre de usuario"
+            @input="onInput"
+            @keydown.enter.prevent="submit"
+          />
+          <span v-if="error" class="create-user-modal__content__error" role="alert">{{
+            error
+          }}</span>
+        </div>
 
-      <p v-if="error" class="create-user-modal__error" role="alert">{{ error }}</p>
+        <div class="create-user-modal__info">
+          <h4>¡Hey, cuidado al elegir tu nombre de usuario!</h4>
+          <p>
+            Ten en cuenta que se usará para mencionarte aleatoriamente en algunas cartas, así que
+            necesitamos que tus amigos te reconozcan... No queremos que piensen que RataLujosa42 ha
+            invadido la partida.
+          </p>
+        </div>
+      </div>
     </div>
   </Modal>
 </template>
 
-<style scoped lang="scss">
-.create-user-modal {
-  display: grid;
-  gap: 16px;
-}
-
-.create-user-modal__avatar {
-  justify-self: center;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.create-user-modal__label {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.create-user-modal__input {
-  width: 100%;
-}
-
-.create-user-modal__error {
-  font-size: 13px;
-}
+<style lang="scss">
+@use './CreateUserModal.styles.scss';
 </style>
