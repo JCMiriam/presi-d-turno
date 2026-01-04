@@ -10,12 +10,20 @@ const props = withDefaults(defineProps<AvatarProps>(), {
 
 const computedAlt = computed(() => (props.decorative ? '' : props.alt))
 
+const avatarModules = import.meta.glob(
+  '../../assets/images/avatars/avatar-*.svg',
+  { eager: true, import: 'default' },
+) as Record<string, string>
+
 const src = computed(() => {
   const safeId = Number.isFinite(props.id) ? props.id : 0
   const clampedId = Math.min(41, Math.max(0, safeId))
   const padded = clampedId.toString().padStart(2, '0')
-  return `../../assets/images/avatars/avatar-${padded}.svg`
+
+  const key = `../../assets/images/avatars/avatar-${padded}.svg`
+  return avatarModules[key] ?? avatarModules['../../assets/images/avatars/avatar-00.svg']
 })
+
 </script>
 
 <template>
