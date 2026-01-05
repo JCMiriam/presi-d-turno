@@ -3,3 +3,7 @@ export { default as AvatarGallery } from '../pages/CreateUser/Components/AvatarG
 export { default as Button } from './Button/Button.component.vue'
 export { default as Icon } from './Icon/Icon.component.vue'
 export { default as Modal } from './Modal/Modal.component.vue'
+export { default as Section } from './Section/Section.component.vue'
+export { default as PlayersPanel } from './PlayersPanel/PlayersPanel.component.vue'
+export { default as PlayersPanelSingleton } from './PlayersPanel/PlayersPanelSingleton.component.vue'
+export { default as PlayerCard } from './PlayerCard/PlayerCard.component.vue'
