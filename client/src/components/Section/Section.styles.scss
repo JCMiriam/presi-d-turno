@@ -1,0 +1,121 @@
+@use '@styles/variables' as *;
+@use '@styles/colors' as *;
+
+.section {
+  width: 100%;
+
+  &__panel {
+    background-color: var(--pure-white);
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    min-width: 0;
+
+    &--auto {
+      width: fit-content;
+    }
+
+    &--sm {
+      width: min(100%, 26rem);
+    }
+
+    &--md {
+      width: min(100%, 30rem);
+    }
+
+    &--lg {
+      width: min(100%, 35rem);
+    }
+
+    &--xl {
+      width: min(100%, 40rem);
+    }
+
+    &--scrollable {
+      max-height: 90dvh;
+      display: flex;
+      flex-direction: column;
+
+      .section__content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        mask-image: linear-gradient(
+          to bottom,
+          black 0%,
+          black calc(100% - 2.5rem),
+          transparent 100%
+        );
+
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black 0%,
+          black calc(100% - 2.5rem),
+          transparent 100%
+        );
+      }
+    }
+  }
+
+  &__header {
+    position: relative;
+    border-radius: $radius-lg $radius-lg 0 0;
+    background-color: var(--primary-dark);
+    padding: 1rem 1.5rem;
+    height: 5rem;
+    z-index: 1;
+
+    &__container {
+      display: flex;
+      justify-content: flex-start;
+      max-height: 100%;
+      gap: 1rem;
+    }
+
+    &--logo {
+      max-height: 100%;
+      width: 2rem;
+
+      img {
+        max-height: 100%;
+      }
+    }
+
+    &--content {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+
+    &--title,
+    &--subtitle {
+      color: var(--pure-white);
+    }
+
+    &--title {
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    &--subtitle {
+      font-size: 1rem;
+      font-weight: 300;
+    }
+  }
+
+  &__content {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  &__buttons {
+    padding: 1.5rem;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+}
