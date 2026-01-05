@@ -2,7 +2,7 @@
 import { Avatar } from '@components'
 import type { PlayerCardProps } from './PlayerCard.types'
 
-const props = defineProps<PlayerCardProps>()
+defineProps<PlayerCardProps>()
 </script>
 
 <template>
@@ -13,14 +13,15 @@ const props = defineProps<PlayerCardProps>()
       <div class="player-card__top">
         <span class="player-card__name">
           {{ username }}
-          <span v-if="id === roomStore.myId" class="tag tag--you">tú</span>
+          <span v-if="isMe" class="tag tag--you">tú</span>
         </span>
 
         <span class="player-card__points">{{ points }} pts</span>
       </div>
+
       <div class="player-card__tags">
-        <span v-if="id === roomStore.hostId" class="tag">host</span>
-        <span v-if="id === roomStore.presiId" class="tag tag--presi">presi</span>
+        <span v-if="isHost" class="tag">host</span>
+        <span v-if="isPresi" class="tag tag--presi">presi</span>
       </div>
     </div>
   </div>

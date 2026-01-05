@@ -6,25 +6,29 @@ export interface RoomStoreState {
   status: RoomState['status']
   hostId: string | null
   presiId: string | null
+
   pointsToWin: number
+  roundsToWin: number
   round: number
 
-  myId: string | null
+  myPlayerId: string | null
+  mySocketId: string | null
+
   playersById: Record<string, Player>
   playerIds: string[]
 }
 
 export interface RoomStoreGetters {
   players: Player[]
-  me: Player | null
+  me: Player | undefined
+  myEffectiveId: string | null
 }
 
 export interface RoomStoreActions {
-  setMyId(id: string): void
+  setMyPlayerId(id: string): void
+  setMySocketId(id: string): void
   applySnapshot(snapshot: RoomState): void
   reset(): void
 }
 
-export type RoomStore = RoomStoreState &
-  RoomStoreGetters &
-  RoomStoreActions
+export type RoomStore = RoomStoreState & RoomStoreGetters & RoomStoreActions
