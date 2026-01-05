@@ -6,9 +6,9 @@ import { AVATARS } from '@data'
 
 import { AvatarGallery } from './Components/AvatarGallery'
 import { CreateUserModal } from './Components/CreateUserModal'
+import { JoinWithIdModal } from './Components/JoinWithIdModal'
 
 import { setUser } from '../../state/index'
-
 import { SOCKET_EVENTS } from '@pdt/shared'
 
 const route = useRoute()
@@ -28,6 +28,18 @@ const error = ref<string | null>(null)
 const isGalleryOpen = ref(false)
 
 const isSubmitting = ref(false)
+
+const isJoinWithIdOpen = ref(false)
+const joinRoomId = ref('')
+const joinError = ref<string | null>(null)
+const isJoiningById = ref(false)
+
+const userDraft = ref<null | {
+  playerId: string
+  playerToken: string
+  username: string
+  avatarId: number
+}>(null)
 
 const getRandomAvatarID = (): number => {
   const randomIndex = Math.floor(Math.random() * AVATARS.length)
@@ -62,24 +74,103 @@ function validate(): boolean {
   return true
 }
 
-function onSubmit() {
-  if (!validate() || isSubmitting.value) return
-  isSubmitting.value = true
+function normalizeRoomId(input: string) {
+  return input.trim().toUpperCase()
+}
 
-  const user = {
-    playerId: crypto.randomUUID(),
-    playerToken: crypto.randomUUID(),
-    username: username.value.trim(),
-    avatarId: selectedAvatarId.value!,
+function buildOrReuseUserDraft() {
+  const currentName = username.value.trim()
+  const currentAvatarId = selectedAvatarId.value!
+
+  if (userDraft.value) {
+    userDraft.value.username = currentName
+    userDraft.value.avatarId = currentAvatarId
+    return userDraft.value
   }
 
+  const created = {
+    playerId: crypto.randomUUID(),
+    playerToken: crypto.randomUUID(),
+    username: currentName,
+    avatarId: currentAvatarId,
+  }
+
+  userDraft.value = created
+  return created
+}
+
+function openJoinWithIdModal() {
+  joinError.value = null
+  if (!validate() || isSubmitting.value || isJoiningById.value) return
+  isJoinWithIdOpen.value = true
+}
+
+function closeJoinWithIdModal() {
+  isJoinWithIdOpen.value = false
+  joinError.value = null
+}
+
+function submitJoinWithId() {
+  if (!validate() || isSubmitting.value || isJoiningById.value) return
+
+  const roomId = normalizeRoomId(joinRoomId.value)
+
+  if (!roomId) {
+    joinError.value = 'Introduce un ID de sala.'
+    return
+  }
+
+  isJoiningById.value = true
+  joinError.value = null
+
+  const user = buildOrReuseUserDraft()
+  setUser(user)
+
+  socket.emit(
+    SOCKET_EVENTS.JOIN_ROOM,
+    {
+      roomId,
+      playerId: user.playerId,
+      playerToken: user.playerToken,
+      username: user.username,
+      avatarId: user.avatarId,
+    },
+    (res: any) => {
+      isJoiningById.value = false
+
+      if (!res || !res.ok) {
+        joinError.value = res?.error ?? 'No existe esa sala (o no se pudo unir).'
+        return
+      }
+
+      isJoinWithIdOpen.value = false
+
+      router.push({
+        name: 'lobby',
+        query: {
+          roomId,
+          mode: 'join',
+        },
+      })
+    },
+  )
+}
+
+function onSubmit() {
+  if (!validate() || isSubmitting.value || isJoiningById.value) return
+  isSubmitting.value = true
+
+  const user = buildOrReuseUserDraft()
   setUser(user)
 
   if (mode.value === 'create') {
     socket.emit(
       SOCKET_EVENTS.CREATE_ROOM,
-      { username: user.username, avatarId: user.avatarId },
-      (res) => {
+      {
+        username: user.username,
+        avatarId: user.avatarId,
+      },
+      (res: any) => {
         isSubmitting.value = false
 
         if (!res || !res.ok) {
@@ -136,6 +227,16 @@ function closeGallery() {
       :submit-label="submitLabel"
       @submit="onSubmit"
       @avatarClick="openGallery"
+      @joinWithId="openJoinWithIdModal"
+    />
+
+    <JoinWithIdModal
+      v-model:roomId="joinRoomId"
+      :open="isJoinWithIdOpen"
+      :error="joinError"
+      :isSubmitting="isJoiningById"
+      @submit="submitJoinWithId"
+      @cancel="closeJoinWithIdModal"
     />
 
     <AvatarGallery
