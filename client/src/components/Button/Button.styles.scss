@@ -53,6 +53,19 @@
     }
   }
 
+  &.full {
+    @extend %font-base-bold;
+    border-radius: $radius-md;
+    min-height: 40px;
+    width: 100%;
+    padding: 10px 24px;
+    max-height: fit-content;
+
+    .text {
+      height: 16px;
+    }
+  }
+
   &.solid {
     color: var(--pure-white);
 
