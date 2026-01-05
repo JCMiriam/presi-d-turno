@@ -27,7 +27,9 @@ export const usePlayerListStore = defineStore('playerlist', () => {
 
   const leader = computed(() => players.value[0] ?? null)
 
-  const myPlayer = computed(() => roomStore.players.find((p) => p.id === roomStore.myId) ?? null)
+  const myPlayer = computed(
+    () => roomStore.players.find((p) => p.id === roomStore.myPlayerId) ?? null,
+  )
 
   return {
     sortMode,
