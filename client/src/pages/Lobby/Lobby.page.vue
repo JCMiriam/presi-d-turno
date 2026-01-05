@@ -17,11 +17,6 @@ const router = useRouter()
 const roomStore = useRoomStore()
 const playersPanel = usePlayersPanelStore()
 
-const mode = computed<'join' | 'create'>(() => {
-  const m = route.query.mode
-  return m === 'join' ? 'join' : 'create'
-})
-
 const roomId = computed<string | null>(() => {
   const r = route.query.roomId
   return typeof r === 'string' && r.trim() ? r.trim().toUpperCase() : null
