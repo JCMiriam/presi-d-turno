@@ -2,15 +2,33 @@
 
 .avatar {
   display: inline-block;
+  overflow: hidden;
   object-fit: cover;
   user-select: none;
 
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: 99%;
+    object-fit: cover;
+  }
+
   &--round {
     border-radius: 100%;
+
+    .avatar__img {
+      border-radius: 100%;
+    }
   }
 
   &--square {
     border-radius: $radius-sm;
+
+    .avatar__img {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   &--xs {

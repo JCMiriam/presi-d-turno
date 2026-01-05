@@ -9,8 +9,10 @@
   flex-direction: column;
 
   &__avatar {
+    border-radius: 100%;
     position: relative;
-    width: fit-content;
+    width: 8rem;
+    height: 8rem;
     align-self: flex-end;
     margin-top: -3rem;
 

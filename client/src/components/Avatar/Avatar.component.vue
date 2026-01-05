@@ -27,14 +27,15 @@ const src = computed(() => {
 </script>
 
 <template>
-  <img
-    class="avatar"
-    :class="`avatar--${size} avatar--${variant}`"
-    :src="src"
-    :alt="computedAlt"
-    loading="lazy"
-    draggable="false"
-  />
+  <div class="avatar" :class="`avatar--${size} avatar--${variant}`">
+    <img
+      class="avatar__img"
+      :src="src"
+      :alt="computedAlt"
+      loading="lazy"
+      draggable="false"
+    />
+  </div>
 </template>
 
 <style scoped lang="scss">
