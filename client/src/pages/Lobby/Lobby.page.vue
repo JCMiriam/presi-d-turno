@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { socket } from '@sockets/socket'
 import { SOCKET_EVENTS, type RoomState, type JoinRoomPayload } from '@pdt/shared'
 
-import { userState } from '../../state/index'
+import { userState, hydrateUserFromStorage, touchUserSession } from '../../state'
 import { useRoomStore } from '@stores/room'
 import { usePlayersPanelStore } from '@stores/playersPanel'
 
@@ -17,6 +17,8 @@ const router = useRouter()
 const roomStore = useRoomStore()
 const playersPanel = usePlayersPanelStore()
 
+const hasJoined = ref(false)
+
 const roomId = computed<string | null>(() => {
   const r = route.query.roomId
   return typeof r === 'string' && r.trim() ? r.trim().toUpperCase() : null
@@ -27,6 +29,20 @@ const inviteUrl = computed(() => {
   const base = window.location.origin
   return `${base}/?roomId=${encodeURIComponent(id)}`
 })
+
+const isHost = computed(() => roomStore.hostId === roomStore.myEffectiveId)
+
+const roundsOptions = [3, 5, 7, 10]
+
+function updateRounds(value: number) {
+  if (!isHost.value) return
+  if (!roomStore.roomId) return
+
+  socket.emit(SOCKET_EVENTS.UPDATE_ROOM_SETTINGS, {
+    roomId: roomStore.roomId,
+    roundsToWin: value,
+  })
+}
 
 async function copyInviteLink() {
   try {
@@ -54,8 +70,6 @@ async function copyInviteLink() {
   }
 }
 
-const hasJoined = ref(false)
-
 function handleRoomState(snapshot: RoomState) {
   roomStore.applySnapshot(snapshot)
 }
@@ -69,6 +83,8 @@ function joinRoom() {
 
   const payload: JoinRoomPayload = {
     roomId: roomId.value,
+    playerId: userState.user.playerId,
+    playerToken: userState.user.playerToken,
     username: userState.user.username,
     avatarId: userState.user.avatarId,
   }
@@ -77,11 +93,14 @@ function joinRoom() {
 }
 
 function handleConnect() {
-  if (socket.id) roomStore.setMyId(socket.id)
+  if (socket.id) roomStore.setMySocketId(socket.id)
+  if (userState.user) roomStore.setMyPlayerId(userState.user.playerId)
   joinRoom()
 }
 
 onMounted(() => {
+  hydrateUserFromStorage()
+
   if (!userState.user) {
     router.replace({
       name: 'user-setup',
@@ -94,6 +113,8 @@ onMounted(() => {
     router.replace({ name: 'user-setup' })
     return
   }
+
+  touchUserSession({ lastRoomId: roomId.value })
 
   playersPanel.mount('#lobby-players-panel-slot', 'lobby-modal', true)
 
@@ -113,20 +134,43 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="lobby">
-    <header class="header">
+    <div id="lobby-players-panel-slot"></div>
+    <section v-if="isHost" class="lobby__settings">
+      <label class="lobby__label">Seleccionar número de rondas</label>
+      <select
+        class="lobby__select"
+        :disabled="!isHost || roomStore.status !== 'lobby'"
+        :value="roomStore.roundsToWin"
+        @change="updateRounds(Number(($event.target as HTMLSelectElement).value))"
+      >
+        <option v-for="r in roundsOptions" :key="r" :value="r">
+          {{ r }}
+        </option>
+      </select>
+    </section>
+    <section>
       <Button
-        :text="inviteStatus === 'copied' ? 'Link copiado al portapapeles' : inviteStatus === 'error' ? 'No se ha podido copiar' : 'Invitar jugadores'"
+        :text="
+          inviteStatus === 'copied'
+            ? 'Link copiado al portapapeles'
+            : inviteStatus === 'error'
+              ? 'No se ha podido copiar'
+              : 'Invitar jugadores'
+        "
+        variant="secondary"
+        appearance="solid"
+        @click="copyInviteLink"
+      ></Button>
+      <Button
+        text="Empezar partida"
         variant="primary"
         appearance="solid"
         @click="copyInviteLink"
       ></Button>
-    </header>
-
-    <div id="lobby-players-panel-slot"></div>
-
+    </section>
   </main>
 </template>
 
 <style scoped lang="scss">
-@import './Lobby.styles.scss';
+@use './Lobby.styles.scss';
 </style>

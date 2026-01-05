@@ -1,1 +1,1 @@
-export { Room, Player } from './room.js'
+export { Room, Player, ServerRoom, ServerPlayer } from './room.js'

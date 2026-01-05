@@ -1,78 +1,151 @@
+import { SOCKET_EVENTS, type JoinRoomPayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
-import {
-  SOCKET_EVENTS,
-  type ClientToServerEvents,
-  type ServerToClientEvents,
-  type RoomState,
-} from '@pdt/shared'
-import { addPlayerToRoom, createRoom, roomExists, getRoom } from '../state/rooms.store.js'
-import { isValidRoomId } from '../utils/roomId.js'
+import type { ServerRoom } from '../types/index.js'
+import { getRoom, setRoom } from '../state/rooms.store.js'
 
-type InterServerEvents = Record<string, never>
-type SocketData = Record<string, never>
+const PURGE_AFTER_MS = 45_000
 
-function buildRoomState(roomId: string): RoomState {
-  const room = getRoom(roomId)
-  if (!room) {
-    // Esto no debería ocurrir si controlas roomExists/getRoom bien,
-    // pero preferimos fallar fuerte y claro.
-    throw new Error(`Room not found: ${roomId}`)
-  }
-
+function toRoomState(room: ServerRoom) {
   return {
-    roomId,
+    roomId: room.roomId,
     version: room.version,
     hostId: room.hostId,
     presiId: room.presiId,
-    players: room.players,
     status: room.status,
     pointsToWin: room.pointsToWin,
+    roundsToWin: room.roundsToWin,
     round: room.round,
+    players: Object.values(room.playersById).map((p) => ({
+      id: p.id,
+      username: p.username,
+      avatarId: p.avatarId,
+      points: p.points,
+    })),
   }
 }
 
-export function registerRoomHandlers(
-  io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
-  socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-) {
-  socket.on(SOCKET_EVENTS.CREATE_ROOM, (payload, ack) => {
-    const { username, avatarId } = payload
+function bump(room: ServerRoom) {
+  room.version += 1
+}
 
-    const { roomId } = createRoom()
+export function registerRoomHandlers(io: Server, socket: Socket) {
+  socket.on(SOCKET_EVENTS.JOIN_ROOM, (payload: JoinRoomPayload, ack) => {
+    try {
+      const roomId = payload.roomId?.trim().toUpperCase()
+      if (!roomId) {
+        ack?.({ ok: false, error: 'ROOM_ID_INVALID' })
+        return
+      }
 
-    socket.join(roomId)
+      const room = getRoom(roomId)
+      if (!room) {
+        ack?.({ ok: false, error: 'ROOM_NOT_FOUND' })
+        return
+      }
 
-    // ✅ avatarId es number (si shared está bien)
-    addPlayerToRoom(roomId, { id: socket.id, username, avatarId })
+      const { playerId, playerToken, username, avatarId } = payload
+      if (!playerId || !playerToken || !username) {
+        ack?.({ ok: false, error: 'UNKNOWN' })
+        return
+      }
 
-    const state = buildRoomState(roomId)
-    io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, state)
+      socket.join(roomId)
 
-    ack?.({ ok: true, roomId })
+      const existing = room.playersById[playerId]
+
+      if (existing) {
+        if (existing.token !== playerToken) {
+          ack?.({ ok: false, error: 'UNKNOWN' })
+          return
+        }
+
+        if (existing.purgeTimer) clearTimeout(existing.purgeTimer)
+        existing.purgeTimer = undefined
+
+        existing.username = username
+        existing.avatarId = avatarId
+
+        existing.socketId = socket.id
+        existing.connected = true
+        existing.disconnectedAt = null
+
+        socket.data.roomId = roomId
+        socket.data.playerId = playerId
+
+        bump(room)
+        io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
+        ack?.({ ok: true, roomId })
+        return
+      }
+
+      room.playersById[playerId] = {
+        id: playerId,
+        token: playerToken,
+        username,
+        avatarId,
+        points: 0,
+        socketId: socket.id,
+        connected: true,
+        disconnectedAt: null,
+      }
+
+      if (!room.hostId) room.hostId = playerId
+      if (!room.presiId) room.presiId = playerId
+
+      socket.data.roomId = roomId
+      socket.data.playerId = playerId
+
+      bump(room)
+      io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
+      ack?.({ ok: true, roomId })
+    } catch {
+      ack?.({ ok: false, error: 'UNKNOWN' })
+    }
   })
 
-  socket.on(SOCKET_EVENTS.JOIN_ROOM, (payload, ack) => {
-    const { roomId: rawRoomId, username, avatarId } = payload
+  socket.on('disconnect', () => {
+    const roomId = socket.data.roomId as string | undefined
+    const playerId = socket.data.playerId as string | undefined
+    if (!roomId || !playerId) return
 
-    const roomId = rawRoomId?.trim?.().toUpperCase?.() ?? rawRoomId
+    const room = getRoom(roomId)
 
-    if (!isValidRoomId(roomId)) {
-      ack?.({ ok: false, error: 'ROOM_ID_INVALID' })
-      return
-    }
+    if (!room) return
 
-    if (!roomExists(roomId)) {
-      ack?.({ ok: false, error: 'ROOM_NOT_FOUND' })
-      return
-    }
+    const player = room.playersById[playerId]
+    if (!player) return
 
-    socket.join(roomId)
+    if (player.socketId !== socket.id) return
 
-    addPlayerToRoom(roomId, { id: socket.id, username, avatarId })
+    player.connected = false
+    player.disconnectedAt = Date.now()
+    player.socketId = null
 
-    const state = buildRoomState(roomId)
-    io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, state)
+    player.purgeTimer = setTimeout(() => {
+      const r = getRoom(roomId)
+      if (!r) return
 
-    ack?.({ ok: true, roomId })
+      const p = r.playersById[playerId]
+      if (!p) return
+
+      if (p.connected) return
+
+      delete r.playersById[playerId]
+
+      if (r.hostId === playerId) {
+        const next = Object.keys(r.playersById)[0] ?? null
+        r.hostId = next ?? ''
+      }
+      if (r.presiId === playerId) {
+        const next = Object.keys(r.playersById)[0] ?? null
+        r.presiId = next ?? ''
+      }
+
+      bump(r)
+      io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(r))
+    }, PURGE_AFTER_MS)
+
+    bump(room)
+    io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
   })
 }

@@ -1,53 +1,66 @@
 import { reactive } from 'vue'
+import { loadStoredUser, saveStoredUser, clearStoredUser, touchStoredUser } from './persistedUser'
 
-/**
- * Identidad local del usuario (cliente)
- * Esto NO es el Player del server.
- */
 export type UserProfile = {
+  playerId: string
+  playerToken: string
   username: string
-  avatarId: number // 0–41, coincide con avatar-XX.svg
+  avatarId: number
 }
 
-/**
- * Estado global reactivo
- * Vive en memoria (se pierde al refresh, y está bien)
- */
 export const userState = reactive<{
   user: UserProfile | null
 }>({
   user: null,
 })
 
-/**
- * Crea / actualiza el usuario
- */
 export function setUser(user: UserProfile) {
   userState.user = user
+
+  saveStoredUser({
+    v: 1,
+    playerId: user.playerId,
+    playerToken: user.playerToken,
+    username: user.username,
+    avatarId: user.avatarId,
+    lastRoomId: null,
+    lastSeenAt: Date.now(),
+  })
 }
 
-/**
- * Limpia la identidad local
- * Útil para:
- * - volver atrás
- * - errores de conexión
- * - expulsión de sala
- */
+export function hydrateUserFromStorage(): boolean {
+  if (userState.user) return true
+
+  const stored = loadStoredUser()
+  if (!stored) return false
+
+  userState.user = {
+    playerId: stored.playerId,
+    playerToken: stored.playerToken,
+    username: stored.username,
+    avatarId: stored.avatarId,
+  }
+
+  touchStoredUser()
+
+  return true
+}
+
+export function touchUserSession(patch?: { lastRoomId?: string | null }) {
+  touchStoredUser({
+    ...(patch?.lastRoomId !== undefined ? { lastRoomId: patch.lastRoomId } : {}),
+  })
+}
+
 export function clearUser() {
   userState.user = null
+  clearStoredUser()
 }
 
-/**
- * Helper: ¿hay usuario creado?
- */
 export function hasUser(): boolean {
   return userState.user !== null
 }
 
-/**
- * Helper: obtiene el usuario o lanza error
- * Útil si quieres ser estricta en ciertas páginas
- */
 export function requireUser(): UserProfile {
   if (!userState.user) {
     throw new Error('User not initialized')
