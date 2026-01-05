@@ -64,10 +64,11 @@ function validate(): boolean {
 
 function onSubmit() {
   if (!validate() || isSubmitting.value) return
-
   isSubmitting.value = true
 
   const user = {
+    playerId: crypto.randomUUID(),
+    playerToken: crypto.randomUUID(),
     username: username.value.trim(),
     avatarId: selectedAvatarId.value!,
   }
@@ -75,22 +76,26 @@ function onSubmit() {
   setUser(user)
 
   if (mode.value === 'create') {
-    socket.emit(SOCKET_EVENTS.CREATE_ROOM, user, (res) => {
-      isSubmitting.value = false
+    socket.emit(
+      SOCKET_EVENTS.CREATE_ROOM,
+      { username: user.username, avatarId: user.avatarId },
+      (res) => {
+        isSubmitting.value = false
 
-      if (!res || !res.ok) {
-        error.value = 'No se pudo crear la sala. Inténtalo de nuevo.'
-        return
-      }
+        if (!res || !res.ok) {
+          error.value = 'No se pudo crear la sala. Inténtalo de nuevo.'
+          return
+        }
 
-      router.push({
-        name: 'lobby',
-        query: {
-          roomId: res.roomId,
-          mode: 'create',
-        },
-      })
-    })
+        router.push({
+          name: 'lobby',
+          query: {
+            roomId: res.roomId,
+            mode: 'create',
+          },
+        })
+      },
+    )
     return
   }
 
@@ -101,26 +106,13 @@ function onSubmit() {
     return
   }
 
-  socket.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, ...user }, (res) => {
-    isSubmitting.value = false
-
-    if (!res || !res.ok) {
-      error.value =
-        res?.error === 'ROOM_NOT_FOUND'
-          ? 'Esa sala no existe (o ya ha caducado).'
-          : res?.error === 'ROOM_ID_INVALID'
-            ? 'El id de la sala no es válido.'
-            : 'No se pudo unir a la sala. Inténtalo de nuevo.'
-      return
-    }
-
-    router.push({
-      name: 'lobby',
-      query: {
-        roomId,
-        mode: 'join',
-      },
-    })
+  isSubmitting.value = false
+  router.push({
+    name: 'lobby',
+    query: {
+      roomId,
+      mode: 'join',
+    },
   })
 }
 

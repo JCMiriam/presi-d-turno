@@ -31,10 +31,14 @@ export const useRoomStore = defineStore('room', {
     status: 'lobby' as RoomState['status'],
     hostId: null as string | null,
     presiId: null as string | null,
-    pointsToWin: 0,
-    round: 0,
 
-    myId: null as string | null,
+    pointsToWin: 0,
+    roundsToWin: 5,
+    round: 0,
+    
+    myPlayerId: null as string | null,
+    mySocketId: null as string | null,
+
     playersById: {} as PlayersById,
     playerIds: [] as string[],
   }),
@@ -43,15 +47,29 @@ export const useRoomStore = defineStore('room', {
     players(state): Player[] {
       return state.playerIds.map((id) => state.playersById[id]).filter(isPlayer)
     },
-    me(state): Player | null {
-      if (!state.myId) return null
-      return state.playersById[state.myId] ?? null
+
+    me(state): Player | undefined {
+      if (state.myPlayerId && state.playersById[state.myPlayerId]) {
+        return state.playersById[state.myPlayerId]
+      }
+      if (state.mySocketId && state.playersById[state.mySocketId]) {
+        return state.playersById[state.mySocketId]
+      }
+      return undefined
+    },
+
+    myEffectiveId(state): string | null {
+      return state.myPlayerId ?? state.mySocketId
     },
   },
 
   actions: {
-    setMyId(id: string) {
-      this.myId = id
+    setMyPlayerId(id: string) {
+      this.myPlayerId = id
+    },
+
+    setMySocketId(id: string) {
+      this.mySocketId = id
     },
 
     applySnapshot(snapshot: RoomState) {
@@ -62,8 +80,14 @@ export const useRoomStore = defineStore('room', {
       this.status = snapshot.status
       this.hostId = snapshot.hostId
       this.presiId = snapshot.presiId
+
       this.pointsToWin = snapshot.pointsToWin
       this.round = snapshot.round
+
+      this.roundsToWin =
+        typeof (snapshot as any).roundsToWin === 'number'
+          ? (snapshot as any).roundsToWin
+          : this.roundsToWin
 
       const normalized = normalizePlayers(snapshot.players)
       this.playersById = normalized.byId
@@ -76,9 +100,14 @@ export const useRoomStore = defineStore('room', {
       this.status = 'lobby'
       this.hostId = null
       this.presiId = null
+
       this.pointsToWin = 0
+      this.roundsToWin = 5
       this.round = 0
-      this.myId = null
+
+      this.myPlayerId = null
+      this.mySocketId = null
+
       this.playersById = {}
       this.playerIds = []
     },

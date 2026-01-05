@@ -13,3 +13,27 @@ export type Room = {
   pointsToWin: number
   round: number
 }
+
+export type ServerPlayer = {
+  id: string
+  token: string
+  username: string
+  avatarId: number
+  points: number
+  socketId: string | null
+  connected: boolean
+  disconnectedAt: number | null
+  purgeTimer?: NodeJS.Timeout
+}
+
+export type ServerRoom = {
+  roomId: string
+  version: number
+  hostId: string
+  presiId: string
+  status: 'lobby' | 'in_game' | 'finished'
+  pointsToWin: number
+  roundsToWin: number
+  round: number
+  playersById: Record<string, ServerPlayer>
+}
