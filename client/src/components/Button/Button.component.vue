@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
 import type { ButtonProps } from './Button.types'
+import { Icon } from '@components';
 
 const attrs = useAttrs()
 const isIconOnly = computed(() => Boolean(props.icon) && !props.text)
@@ -13,6 +14,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   iconShape: 'round',
   type: 'button',
   appearance: 'solid',
+  color: 'pure-white'
 })
 
 const classes = computed(() => ({
@@ -33,7 +35,7 @@ const classes = computed(() => ({
       <Icon
         v-if="icon && iconPosition === 'left'"
         :icon="icon"
-        :size="size"
+        :size="24"
         :color="color"
         class="icon icon--left"
         aria-hidden="true"
@@ -44,7 +46,7 @@ const classes = computed(() => ({
       <Icon
         v-if="icon && iconPosition === 'right'"
         :icon="icon"
-        :size="size"
+        :size="24"
         :color="color"
         class="icon icon--right"
         aria-hidden="true"

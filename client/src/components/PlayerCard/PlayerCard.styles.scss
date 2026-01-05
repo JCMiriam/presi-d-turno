@@ -1,0 +1,53 @@
+@use '@styles/variables' as *;
+@use '@styles/colors' as *;
+
+.player-card {
+  background-color: var(--light-gray);
+  box-shadow: $shadow-md;
+  border-radius: $radius-sm;
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+
+  &__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__name {
+    font-weight: 600;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    display: inline-block;
+    border: 1px solid var(--middle-gray);
+    color: var(--middle-gray);
+    border-radius: $radius-sm;
+    padding: 0 0.5rem;
+
+    &--presi {
+      border-color: var(--dark-green-water);
+      color: var(--dark-green-water);
+    }
+
+    &--you {
+      border-color: var(--light-red-alert);
+      color: var(--light-red-alert);
+    }
+  }
+}

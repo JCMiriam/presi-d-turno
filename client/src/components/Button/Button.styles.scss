@@ -57,9 +57,9 @@
     color: var(--pure-white);
 
     &.primary {
-      background-color: var(--dark-gray);
+      background-color: var(--primary-dark);
       &:hover {
-        background-color: var(--middark-gray);
+        background-color: var(--light-primary-dark);
       }
     }
 

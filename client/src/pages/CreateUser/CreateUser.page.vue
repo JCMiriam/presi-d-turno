@@ -27,7 +27,6 @@ const selectedAvatarId = ref<number | null>(null)
 const error = ref<string | null>(null)
 const isGalleryOpen = ref(false)
 
-// evita dobles submits
 const isSubmitting = ref(false)
 
 const getRandomAvatarID = (): number => {
@@ -73,10 +72,8 @@ function onSubmit() {
     avatarId: selectedAvatarId.value!,
   }
 
-  // guardamos identidad local (ok)
   setUser(user)
 
-  // ⚠️ IMPORTANTE: aquí es donde realmente creas/te unes a la sala en el server
   if (mode.value === 'create') {
     socket.emit(SOCKET_EVENTS.CREATE_ROOM, user, (res) => {
       isSubmitting.value = false
@@ -97,7 +94,6 @@ function onSubmit() {
     return
   }
 
-  // join
   const roomId = roomIdFromQuery.value?.trim().toUpperCase() ?? null
   if (!roomId) {
     isSubmitting.value = false

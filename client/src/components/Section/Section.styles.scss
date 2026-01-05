@@ -1,35 +1,33 @@
 @use '@styles/variables' as *;
 @use '@styles/colors' as *;
 
-.modal {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
+.section {
+  width: 100%;
 
   &__panel {
     background-color: var(--pure-white);
     border-radius: $radius-lg;
     box-shadow: $shadow-lg;
+    min-width: 0;
 
     &--auto {
       width: fit-content;
     }
 
     &--sm {
-      width: min(92vw, 26rem);
+      width: min(100%, 26rem);
     }
 
     &--md {
-      width: min(92vw, 30rem);
+      width: min(100%, 30rem);
     }
 
     &--lg {
-      width: min(92vw, 35rem);
+      width: min(100%, 35rem);
     }
 
     &--xl {
-      width: min(92vw, 40rem);
+      width: min(100%, 40rem);
     }
 
     &--scrollable {
@@ -37,7 +35,7 @@
       display: flex;
       flex-direction: column;
 
-      .modal__content {
+      .section__content {
         flex: 1 1 auto;
         min-height: 0;
         overflow: auto;
@@ -119,32 +117,5 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-  }
-
-  &-enter-active,
-  &-leave-active {
-    transition: opacity 180ms ease;
-  }
-
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-  }
-
-  &-enter-active &__panel,
-  &-leave-active &__panel {
-    transition:
-      transform 200ms ease,
-      opacity 200ms ease;
-  }
-
-  &-enter-from &__panel {
-    transform: translateY(8px) scale(0.98);
-    opacity: 0;
-  }
-
-  &-leave-to &__panel {
-    transform: translateY(10px) scale(0.98);
-    opacity: 0;
   }
 }

@@ -11,7 +11,7 @@ export interface ButtonProps {
   text?: string
   icon?: IconName
   iconPosition?: ButtonIconPosition
-  color: ColorName
+  color?: ColorName
   variant: ButtonVariant
   appearance: ButtonAppearance
   iconShape?: IconShape
