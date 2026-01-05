@@ -1,6 +1,6 @@
 import type { ColorName, IconName } from '@types'
 
-export type ButtonSize = 'sm' | 'md' | 'lg'
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'full'
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'alert' | 'success'
 export type ButtonAppearance = 'solid' | 'outline' | 'transparent' | 'icon'
 export type IconShape = 'default' | 'round'

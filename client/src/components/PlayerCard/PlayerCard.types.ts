@@ -1,9 +1,9 @@
-import type { RoomStore } from '@types'
-
 export interface PlayerCardProps {
-  id: string;
-  avatarId: number;
-  username: string;
-  points: number;
-  roomStore: RoomStore;
+  id: string
+  avatarId: number
+  username: string
+  points: number
+  isMe?: boolean
+  isHost?: boolean
+  isPresi?: boolean
 }

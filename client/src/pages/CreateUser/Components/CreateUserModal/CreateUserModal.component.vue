@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Modal, Avatar, Icon } from '@components'
-
 import type { CreateUserModalProps } from './CreateUserModal.types'
 
 const props = defineProps<CreateUserModalProps>()
@@ -10,17 +9,21 @@ const emit = defineEmits<{
   (e: 'update:username', value: string): void
   (e: 'submit'): void
   (e: 'avatarClick'): void
+  (e: 'joinWithId'): void
 }>()
 
 const open = computed(() => true)
 
+const isJoinMode = computed(() => props.mode === 'join')
+const showJoinWithId = computed(() => props.mode === 'create')
+
 const title = computed(() => {
-  if (props.mode === 'join') return props.roomId ? `#${props.roomId}` : 'Accediendo por invitación…'
+  if (isJoinMode.value) return props.roomId ? `#${props.roomId}` : 'Accediendo por invitación…'
   return 'Crea tu usuario'
 })
 
 const subtitle = computed(() => {
-  if (props.mode === 'join') return props.roomId ? `ID de la partida` : 'Accediendo por invitación…'
+  if (isJoinMode.value) return props.roomId ? `ID de la partida` : 'Accediendo por invitación…'
   return ''
 })
 
@@ -30,6 +33,7 @@ const onInput = (e: Event) => {
 
 const submit = () => emit('submit')
 const avatarClick = () => emit('avatarClick')
+const joinWithId = () => emit('joinWithId')
 </script>
 
 <template>
@@ -43,6 +47,8 @@ const avatarClick = () => emit('avatarClick')
     :closeOnEsc="false"
     :onSubmit="submit"
     :submitText="submitLabel"
+    :onSecondaryFunction="showJoinWithId ? joinWithId : undefined"
+    :secondaryText="showJoinWithId ? 'Unirse con ID de sala' : undefined"
   >
     <div class="create-user-modal">
       <button
@@ -53,7 +59,7 @@ const avatarClick = () => emit('avatarClick')
       >
         <Avatar :id="avatarId" alt="Tu avatar" size="xl" decorative />
         <div class="create-user-modal__avatar__edit-button">
-          <Icon icon="pencil" :size="20" color="pure-white"></Icon>
+          <Icon icon="pencil" :size="20" color="pure-white" />
         </div>
       </button>
 
@@ -71,9 +77,9 @@ const avatarClick = () => emit('avatarClick')
             @input="onInput"
             @keydown.enter.prevent="submit"
           />
-          <span v-if="error" class="create-user-modal__content__error" role="alert">{{
-            error
-          }}</span>
+          <span v-if="error" class="create-user-modal__content__error" role="alert">
+            {{ error }}
+          </span>
         </div>
 
         <div class="create-user-modal__info">

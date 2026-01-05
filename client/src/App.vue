@@ -1,12 +1,26 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import PlayersPanelSingleton from '@components/PlayersPanel/PlayersPanelSingleton.component.vue'
+import { userState } from './state'
+
+const route = useRoute()
+
+const showPlayersPanel = computed(() => {
+  const isUserSetup = route.name === 'user-setup'
+  const isHome = route.name === 'home' || route.path === '/'
+  if (isUserSetup || isHome) return false
+
+  return Boolean(userState.user)
+})
 </script>
 
 <template>
   <div class="background-image" aria-hidden></div>
   <router-view />
-  <PlayersPanelSingleton />
+  <PlayersPanelSingleton v-if="showPlayersPanel" />
 </template>
+
 
 <style scoped lang="scss">
 .background-image {

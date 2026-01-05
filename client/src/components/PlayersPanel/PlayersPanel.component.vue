@@ -18,16 +18,18 @@ const subtitle = computed(() => (roomStore.roomId ? `# ${roomStore.roomId}` : un
 </script>
 
 <template>
-  <Section
-    class="players-panel"
-    :title="title"
-    :subtitle="subtitle"
-    :size="size"
-    scrollable
-  >
+  <Section class="players-panel" :title="title" :subtitle="subtitle" :size="size" scrollable>
     <ul class="players-panel__list" role="list">
       <li v-for="p in playerList.players" :key="p.id" class="players-panel__item" role="listitem">
-        <PlayerCard :id="p.id" :avatar-id="p.avatarId" :username="p.username" :points="p.points" :room-store="roomStore"></PlayerCard>
+        <PlayerCard
+          :id="p.id"
+          :avatar-id="p.avatarId"
+          :username="p.username"
+          :points="p.points"
+          :is-me="p.id === roomStore.myEffectiveId"
+          :is-host="p.id === roomStore.hostId"
+          :is-presi="p.id === roomStore.presiId"
+        />
       </li>
     </ul>
 
