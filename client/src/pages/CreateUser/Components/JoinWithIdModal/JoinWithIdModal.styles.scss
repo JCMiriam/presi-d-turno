@@ -1,21 +1,50 @@
+@use '@styles/variables.scss' as *;
+@use '@styles/colors.scss' as *;
+@use '@styles/fonts.scss' as *;
+@use '@styles/breakpoints.scss' as *;
+
 .join-with-id {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 
+  &__image {
+    width: 10rem;
+    justify-self: flex-end;
+    align-self: flex-end;
+    margin-top: -2.5rem;
+
+    @include respond(xs) {
+      margin-top: -5rem;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: -2rem;
+
+    &__id {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+
   &__label {
-    font-weight: 600;
+    width: fit-content;
+    background-color: var(--primary-dark);
+    color: var(--pure-white);
+    padding: 0.5rem 1rem;
+    border-radius: $radius-xl;
   }
 
   &__input {
-    width: 100%;
-    border-radius: 12px;
-    padding: 12px 14px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    outline: none;
-
-    &:focus {
-      border-color: rgba(0, 0, 0, 0.3);
-    }
+    padding: 0.5rem 1rem;
+    border-radius: $radius-md;
+    border: 1px solid var(--midlight-gray);
   }
 
   &__error {
