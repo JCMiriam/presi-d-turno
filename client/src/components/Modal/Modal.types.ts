@@ -13,6 +13,8 @@ export type ModalProps = {
   ariaLabel?: string
   submitText?: string
   cancelText?: string
+  secondaryText?: string
   onCancel?: () => void
   onSubmit?: () => void
+  onSecondaryFunction?: () => void
 }

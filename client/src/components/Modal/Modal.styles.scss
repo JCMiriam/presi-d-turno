@@ -1,5 +1,6 @@
 @use '@styles/variables' as *;
 @use '@styles/colors' as *;
+@use '@styles/breakpoints' as *;
 
 .modal {
   position: fixed;
@@ -117,8 +118,13 @@
     padding: 1.5rem;
     padding-top: 1rem;
     display: flex;
+    flex-direction: column;
     justify-content: flex-end;
-    gap: 1rem;
+    gap: .5rem;
+
+    @include respond(md) {
+      flex-direction: row;
+    }
   }
 
   &-enter-active,

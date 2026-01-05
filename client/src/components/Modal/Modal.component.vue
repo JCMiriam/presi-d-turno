@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<ModalProps>(), {
   ariaLabel: 'Modal dialog',
   submitText: 'Guardar',
   cancelText: 'Cancelar',
+  secondaryText: ''
 })
 
 const emit = defineEmits<{
@@ -141,22 +142,33 @@ onBeforeUnmount(() => {
             <slot></slot>
           </section>
 
-          <section v-if="onCancel || onSubmit" class="modal__buttons">
-            <Button
-              v-if="onSubmit"
-              :text="submitText"
-              variant="primary"
-              appearance="solid"
-              color="pure-white"
-              @click="onSubmit"
-            ></Button>
+          <section v-if="onCancel || onSubmit || onSecondaryFunction" class="modal__buttons">
             <Button
               v-if="onCancel"
               :text="cancelText"
+              size="full"
               variant="danger"
               appearance="solid"
               color="pure-white"
               @click="onCancel"
+            ></Button>
+            <Button
+              v-if="onSecondaryFunction"
+              :text="secondaryText"
+              size="full"
+              variant="secondary"
+              appearance="solid"
+              color="pure-white"
+              @click="onSecondaryFunction"
+            ></Button>
+            <Button
+              v-if="onSubmit"
+              :text="submitText"
+              size="full"
+              variant="primary"
+              appearance="solid"
+              color="pure-white"
+              @click="onSubmit"
             ></Button>
           </section>
         </div>
