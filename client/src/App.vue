@@ -1,8 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import PlayersPanelSingleton from '@components/PlayersPanel/PlayersPanelSingleton.component.vue'
+</script>
 
 <template>
   <div class="background-image" aria-hidden></div>
   <router-view />
+  <PlayersPanelSingleton />
 </template>
 
 <style scoped lang="scss">
