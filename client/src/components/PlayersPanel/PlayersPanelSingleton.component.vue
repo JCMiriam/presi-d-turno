@@ -12,6 +12,6 @@ const shouldRender = computed(() => Boolean(roomStore.roomId))
 
 <template>
   <Teleport v-if="shouldRender" :to="panel.target">
-    <PlayersPanel size="md" :scrollable="false" />
+    <PlayersPanel size="full" :scrollable="false" />
   </Teleport>
 </template>

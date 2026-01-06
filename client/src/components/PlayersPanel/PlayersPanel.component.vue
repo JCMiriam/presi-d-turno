@@ -4,12 +4,6 @@ import { Section, PlayerCard } from '@components'
 import { useRoomStore } from '@stores/room'
 import { usePlayerListStore } from '@stores/playerList'
 
-import type { PlayersPanelProps } from './PlayersPanel.types'
-
-const props = withDefaults(defineProps<PlayersPanelProps>(), {
-  size: 'sm',
-})
-
 const roomStore = useRoomStore()
 const playerList = usePlayerListStore()
 
@@ -18,22 +12,20 @@ const subtitle = computed(() => (roomStore.roomId ? `# ${roomStore.roomId}` : un
 </script>
 
 <template>
-  <Section class="players-panel" :title="title" :subtitle="subtitle" :size="size" scrollable>
+  <Section class="players-panel" :title="title" :subtitle="subtitle" size="full" scrollable>
     <ul class="players-panel__list" role="list">
-      <li v-for="p in playerList.players" :key="p.id" class="players-panel__item" role="listitem">
+      <li v-for="player in playerList.players" :key="player.id" class="players-panel__item" role="listitem">
         <PlayerCard
-          :id="p.id"
-          :avatar-id="p.avatarId"
-          :username="p.username"
-          :points="p.points"
-          :is-me="p.id === roomStore.myEffectiveId"
-          :is-host="p.id === roomStore.hostId"
-          :is-presi="p.id === roomStore.presiId"
+          :id="player.id"
+          :avatar-id="player.avatarId"
+          :username="player.username"
+          :points="player.points"
+          :is-me="player.id === roomStore.myEffectiveId"
+          :is-host="player.id === roomStore.hostId"
+          :is-presi="player.id === roomStore.presiId"
         />
       </li>
     </ul>
-
-    <p v-if="playerList.players.length === 0" class="players-panel__muted">Aún no hay jugadores.</p>
   </Section>
 </template>
 
