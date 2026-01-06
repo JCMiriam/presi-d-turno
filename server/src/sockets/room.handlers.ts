@@ -1,7 +1,7 @@
-import { SOCKET_EVENTS, type JoinRoomPayload } from '@pdt/shared'
+import { SOCKET_EVENTS, type JoinRoomPayload, type UpdateRoomSettingsPayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
 import type { ServerRoom } from '../types/index.js'
-import { getRoom, setRoom } from '../state/rooms.store.js'
+import { getRoom } from '../state/rooms.store.js'
 
 const PURGE_AFTER_MS = 45_000
 
@@ -98,6 +98,47 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
       bump(room)
       io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
       ack?.({ ok: true, roomId })
+    } catch {
+      ack?.({ ok: false, error: 'UNKNOWN' })
+    }
+  })
+
+  socket.on(SOCKET_EVENTS.UPDATE_ROOM_SETTINGS, (payload: UpdateRoomSettingsPayload, ack) => {
+    try {
+      const roomId = payload.roomId?.trim().toUpperCase()
+      const roundsToWin = payload.roundsToWin
+
+      if (!roomId || typeof roundsToWin !== 'number' || !Number.isFinite(roundsToWin)) {
+        ack?.({ ok: false, error: 'INVALID_SETTINGS' })
+        return
+      }
+
+      const socketRoomId = socket.data.roomId as string | undefined
+      const socketPlayerId = socket.data.playerId as string | undefined
+
+      if (!socketRoomId || !socketPlayerId || socketRoomId !== roomId) {
+        ack?.({ ok: false, error: 'UNKNOWN' })
+        return
+      }
+
+      const room = getRoom(roomId)
+      if (!room) {
+        ack?.({ ok: false, error: 'ROOM_NOT_FOUND' })
+        return
+      }
+
+      if (room.hostId !== socketPlayerId) {
+        ack?.({ ok: false, error: 'NOT_HOST' })
+        return
+      }
+
+      const clamped = Math.max(1, Math.min(50, Math.floor(roundsToWin)))
+
+      room.roundsToWin = clamped
+      bump(room)
+
+      io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
+      ack?.({ ok: true })
     } catch {
       ack?.({ ok: false, error: 'UNKNOWN' })
     }

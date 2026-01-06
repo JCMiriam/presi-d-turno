@@ -41,14 +41,22 @@ const roundsOptions = [3, 5, 7, 10, 15, 20]
 function updateRounds(value: number) {
   if (!isHost.value) return
   if (!roomStore.roomId) return
+  if (roomStore.status !== 'lobby') return
 
-  roomStore.setRoundsToWin(value)
-
-  socket.emit(SOCKET_EVENTS.UPDATE_ROOM_SETTINGS, {
-    roomId: roomStore.roomId,
-    roundsToWin: value,
-  })
+  socket.emit(
+    SOCKET_EVENTS.UPDATE_ROOM_SETTINGS,
+    {
+      roomId: roomStore.roomId,
+      roundsToWin: value,
+    },
+    (res) => {
+      if (!res?.ok) {
+        console.warn('update_room_settings failed:', res?.error)
+      }
+    },
+  )
 }
+
 
 async function copyInviteLink() {
   try {

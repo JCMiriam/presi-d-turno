@@ -53,11 +53,6 @@ export type RoomState = {
   round: number
 }
 
-export type RoomStatePayload = {
-  roomId: string
-  players: Array<{ id: string; username: string; avatarId: number }>
-}
-
 export interface ClientToServerEvents {
   [SOCKET_EVENTS.CREATE_ROOM]: (
     payload: CreateRoomPayload,
