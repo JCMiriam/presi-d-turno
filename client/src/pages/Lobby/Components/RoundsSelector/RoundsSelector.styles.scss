@@ -1,0 +1,81 @@
+@use '@styles/variables' as *;
+@use '@styles/colors' as *;
+
+.rounds-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+
+  &__button {
+    background-color: var(--pure-white);
+    padding: 0.5rem 0.75rem;
+    border-radius: $radius-sm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: $shadow-sm;
+    min-height: 30px;
+    min-width: 30px;
+    border: none;
+    margin-bottom: 1rem;
+  }
+
+  &__button--mirror {
+    margin-bottom: 0;
+  }
+
+  &__label {
+    font-weight: 600;
+  }
+
+  &__value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+
+  &__popover {
+    padding: 0.5rem 0.75rem;
+    border-radius: $radius-sm;
+    background-color: var(--pure-white);
+    box-shadow: $shadow-sm;
+  }
+
+  &__option {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.8rem;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 140ms ease, transform 140ms ease;
+
+    &[data-active='true'] {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    &[data-selected='true'] {
+      background: rgba(0, 0, 0, 0.09);
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0px);
+    }
+  }
+
+  &__check {
+    opacity: 0.9;
+    font-size: 0.95rem;
+  }
+}

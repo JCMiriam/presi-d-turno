@@ -35,7 +35,7 @@ export const useRoomStore = defineStore('room', {
     pointsToWin: 0,
     roundsToWin: 5,
     round: 0,
-    
+
     myPlayerId: null as string | null,
     mySocketId: null as string | null,
 
@@ -70,6 +70,10 @@ export const useRoomStore = defineStore('room', {
 
     setMySocketId(id: string) {
       this.mySocketId = id
+    },
+
+    setRoundsToWin(value: number) {
+      this.roundsToWin = value
     },
 
     applySnapshot(snapshot: RoomState) {
