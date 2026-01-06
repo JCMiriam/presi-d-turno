@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
         text="Empezar partida"
         variant="primary"
         appearance="solid"
-        :disbled="!isHost"
+        :disabled="!isHost"
         @click="copyInviteLink"
       ></Button>
 
