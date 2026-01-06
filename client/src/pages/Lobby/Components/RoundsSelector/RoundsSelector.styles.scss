@@ -54,7 +54,9 @@
     border-radius: 0.8rem;
     cursor: pointer;
     font-weight: 700;
-    transition: background-color 140ms ease, transform 140ms ease;
+    transition:
+      background-color 140ms ease,
+      transform 140ms ease;
 
     &[data-active='true'] {
       background: rgba(0, 0, 0, 0.06);
@@ -77,5 +79,11 @@
   &__check {
     opacity: 0.9;
     font-size: 0.95rem;
+  }
+
+  &--disabled {
+    .rounds-selector__button {
+      background-color: var(--midlight-gray);
+    }
   }
 }

@@ -161,7 +161,6 @@ const onReposition = () => {
 }
 
 onMounted(() => {
-  // Mejor en document: más consistente + stopPropagation funciona bien
   document.addEventListener('pointerdown', onClickOutside)
   window.addEventListener('resize', onReposition)
   window.addEventListener('scroll', onReposition, true)
@@ -183,8 +182,7 @@ watch(
 </script>
 
 <template>
-  <div ref="rootRef" class="rounds-selector">
-    <!-- Botón real -->
+  <div ref="rootRef" class="rounds-selector" :class="{ 'rounds-selector--disabled': disabled }">
     <button
       ref="buttonRef"
       :id="`${id}-button`"
@@ -200,11 +198,10 @@ watch(
 
       <span class="rounds-selector__value">
         {{ selectedLabel }}
-        <Icon icon="caret-down" :size="16" color="primary-dark" />
+        <Icon v-if="!disabled" icon="caret-down" :size="16" color="primary-dark" />
       </span>
     </button>
 
-    <!-- Botón espejo por encima del overlay -->
     <Teleport to="body">
       <button
         v-if="isOpen && isOverlayOwner"
@@ -227,7 +224,6 @@ watch(
       </button>
     </Teleport>
 
-    <!-- Popover teletransportado -->
     <Teleport to="body">
       <div
         v-show="isOpen"
