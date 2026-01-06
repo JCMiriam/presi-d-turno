@@ -19,6 +19,8 @@
       "@pages/*": ["src/pages/*"],
       "@components": ["src/components/index.ts"],
       "@components/*": ["src/components/*"],
+      "@composables": ["src/composables/index.ts"],
+      "@composables/*": ["src/composables/*"],
       "@stores": ["src/stores/index.ts"],
       "@stores/*": ["src/stores/*"],
       "@sockets": ["src/sockets/index.ts"],

@@ -10,6 +10,7 @@ export default defineConfig({
       '@data': path.resolve(__dirname, 'src/data'),
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@components': path.resolve(__dirname, 'src/components'),
+      '@composables': path.resolve(__dirname, 'src/composables'),
       '@stores': path.resolve(__dirname, 'src/stores'),
       '@sockets': path.resolve(__dirname, 'src/sockets'),
       '@styles': path.resolve(__dirname, 'src/styles'),
