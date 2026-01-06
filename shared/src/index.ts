@@ -1,3 +1,5 @@
+export * from './deck'
+
 export const SOCKET_EVENTS = {
   CREATE_ROOM: 'create_room',
   JOIN_ROOM: 'join_room',
