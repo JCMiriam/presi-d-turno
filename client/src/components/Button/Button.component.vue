@@ -17,6 +17,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   color: 'pure-white'
 })
 
+const isDisabled = computed(() => props.disabled || props.loading)
+
 const classes = computed(() => ({
   button: true,
   [props.variant]: true,
@@ -24,6 +26,8 @@ const classes = computed(() => ({
   [props.size]: true,
   'icon-only': isIconOnly.value && props.iconShape !== 'round',
   'icon-round': isIconOnly.value && props.iconShape === 'round',
+  'button--disabled': isDisabled.value,
+  'button--loading': props.loading,
 }))
 </script>
 

@@ -184,6 +184,17 @@
     cursor: not-allowed;
   }
 
+  &--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &--loading {
+    cursor: wait;
+    pointer-events: none;
+  }
+
   .loader {
     width: 1em;
     height: 1em;
