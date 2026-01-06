@@ -2,10 +2,10 @@
 
 .avatar-gallery {
   &__grid {
-    max-width: 100%;
-    display: grid;
-    gap: 0.65rem;
-    grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
 
     button {
       display: flex;
