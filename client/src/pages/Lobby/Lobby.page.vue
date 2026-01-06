@@ -8,14 +8,18 @@ import { SOCKET_EVENTS, type RoomState, type JoinRoomPayload } from '@pdt/shared
 import { userState, hydrateUserFromStorage, touchUserSession } from '../../state'
 import { useRoomStore } from '@stores/room'
 import { usePlayersPanelStore } from '@stores/playersPanel'
+import { useBreakpoint } from '@composables'
 
 import { Button } from '@components'
+import { RoundsSelector } from './Components/RoundsSelector'
 
 const inviteStatus = ref<'idle' | 'copied' | 'error'>('idle')
 const route = useRoute()
 const router = useRouter()
 const roomStore = useRoomStore()
 const playersPanel = usePlayersPanelStore()
+
+const { isAbove } = useBreakpoint()
 
 const hasJoined = ref(false)
 
@@ -32,17 +36,27 @@ const inviteUrl = computed(() => {
 
 const isHost = computed(() => roomStore.hostId === roomStore.myEffectiveId)
 
-const roundsOptions = [3, 5, 7, 10]
+const roundsOptions = [3, 5, 7, 10, 15, 20]
 
 function updateRounds(value: number) {
   if (!isHost.value) return
   if (!roomStore.roomId) return
+  if (roomStore.status !== 'lobby') return
 
-  socket.emit(SOCKET_EVENTS.UPDATE_ROOM_SETTINGS, {
-    roomId: roomStore.roomId,
-    roundsToWin: value,
-  })
+  socket.emit(
+    SOCKET_EVENTS.UPDATE_ROOM_SETTINGS,
+    {
+      roomId: roomStore.roomId,
+      roundsToWin: value,
+    },
+    (res) => {
+      if (!res?.ok) {
+        console.warn('update_room_settings failed:', res?.error)
+      }
+    },
+  )
 }
+
 
 async function copyInviteLink() {
   try {
@@ -134,22 +148,23 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="lobby">
-    <div id="lobby-players-panel-slot"></div>
-    <section v-if="isHost" class="lobby__settings">
-      <label class="lobby__label">Seleccionar número de rondas</label>
-      <select
-        class="lobby__select"
+    <section class="lobby__players">
+      <RoundsSelector
+        v-if="!isAbove('lg').value"
+        :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
+        :options="roundsOptions"
         :disabled="!isHost || roomStore.status !== 'lobby'"
-        :value="roomStore.roundsToWin"
-        @change="updateRounds(Number(($event.target as HTMLSelectElement).value))"
-      >
-        <option v-for="r in roundsOptions" :key="r" :value="r">
-          {{ r }}
-        </option>
-      </select>
+        :model-value="roomStore.roundsToWin"
+        @update:modelValue="updateRounds"
+        hint="Esto define cuántas rondas necesita ganar alguien para terminar la partida."
+      ></RoundsSelector>
+
+      <div id="lobby-players-panel-slot"></div>
     </section>
-    <section>
+
+    <section class="lobby__buttons">
       <Button
+        size="full"
         :text="
           inviteStatus === 'copied'
             ? 'Link copiado al portapapeles'
@@ -157,16 +172,28 @@ onBeforeUnmount(() => {
               ? 'No se ha podido copiar'
               : 'Invitar jugadores'
         "
-        variant="secondary"
+        variant="success"
         appearance="solid"
         @click="copyInviteLink"
       ></Button>
+
       <Button
+        size="full"
         text="Empezar partida"
         variant="primary"
         appearance="solid"
+        :disabled="!isHost"
         @click="copyInviteLink"
       ></Button>
+
+      <RoundsSelector
+        v-if="isAbove('lg').value"
+        :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
+        :options="roundsOptions"
+        :disabled="!isHost || roomStore.status !== 'lobby'"
+        :model-value="roomStore.roundsToWin"
+        @update:modelValue="updateRounds"
+      ></RoundsSelector>
     </section>
   </main>
 </template>

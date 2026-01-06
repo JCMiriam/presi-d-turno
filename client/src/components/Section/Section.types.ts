@@ -1,4 +1,4 @@
-export type SectionSize = 'sm' | 'md' | 'lg' | 'xl' | 'auto'
+export type SectionSize = 'sm' | 'md' | 'lg' | 'xl' | 'auto' | 'full'
 
 export type SectionProps = {
   title?: string

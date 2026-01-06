@@ -65,7 +65,7 @@ function validate(): boolean {
     return false
   }
 
-  if (!selectedAvatarId.value) {
+  if (selectedAvatarId.value === null || selectedAvatarId.value === undefined) {
     error.value = '*Selecciona un avatar.'
     return false
   }

@@ -1,0 +1,23 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ov-z);
+
+  background: rgba(0, 0, 0, var(--ov-opacity));
+  backdrop-filter: blur(var(--ov-blur));
+
+  background-image: radial-gradient(
+    120% 120% at 20% 0%,
+    rgba(255, 255, 255, 0.06),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.ov-fade-enter-active,
+.ov-fade-leave-active {
+  transition: opacity 160ms ease;
+}
+.ov-fade-enter-from,
+.ov-fade-leave-to {
+  opacity: 0;
+}

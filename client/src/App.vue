@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import PlayersPanelSingleton from '@components/PlayersPanel/PlayersPanelSingleton.component.vue'
+import { Overlay, PlayersPanelSingleton } from '@components'
 import { userState } from './state'
 
 const route = useRoute()
@@ -17,10 +17,14 @@ const showPlayersPanel = computed(() => {
 
 <template>
   <div class="background-image" aria-hidden></div>
-  <router-view />
+
+  <main class="container">
+    <router-view />
+  </main>
+
+  <Overlay></Overlay>
   <PlayersPanelSingleton v-if="showPlayersPanel" />
 </template>
-
 
 <style scoped lang="scss">
 .background-image {
@@ -34,5 +38,10 @@ const showPlayersPanel = computed(() => {
   background-position: center;
   pointer-events: none;
   z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
 }
 </style>

@@ -67,3 +67,7 @@ table {
 :focus {
   outline: 2px solid var(--green-water);
 }
+
+.no-scroll {
+  overflow: hidden;
+}
