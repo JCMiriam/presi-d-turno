@@ -17,7 +17,13 @@ const showPlayersPanel = computed(() => {
 
 <template>
   <div class="background-image" aria-hidden></div>
-  <router-view />
+
+  <div class="app-shell">
+    <main class="container">
+      <router-view />
+    </main>
+  </div>
+
   <PlayersPanelSingleton v-if="showPlayersPanel" />
 </template>
 
@@ -34,5 +40,14 @@ const showPlayersPanel = computed(() => {
   background-position: center;
   pointer-events: none;
   z-index: 0;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
 }
 </style>

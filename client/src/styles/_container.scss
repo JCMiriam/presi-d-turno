@@ -1,0 +1,66 @@
+@use './breakpoints' as *;
+
+$container-padding: (
+  base: 1rem,
+  xs: 1rem,
+  sm: 1.25rem,
+  md: 1.5rem,
+  lg: 2rem,
+  xl: 2.5rem,
+  xxl: 3rem,
+);
+
+$container-max-width: (
+  sm: 37.5rem,
+  md: 45rem,
+  lg: 60rem,
+  xl: 70rem,
+  xxl: 80rem,
+);
+
+.container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: map-get($container-padding, base);
+  padding-block-start: map-get($container-padding, xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  @include respond(xs) {
+    padding-inline: map-get($container-padding, xs);
+    padding-block-start: map-get($container-padding, xl);
+  }
+
+  @include respond(sm) {
+    padding-inline: map-get($container-padding, sm);
+    padding-block-start: map-get($container-padding, xl);
+    max-width: map-get($container-max-width, sm);
+  }
+
+  @include respond(md) {
+    padding-inline: map-get($container-padding, md);
+    padding-block-start: map-get($container-padding, xl);
+    max-width: map-get($container-max-width, md);
+  }
+
+  @include respond(lg) {
+    padding-inline: map-get($container-padding, lg);
+    padding-block-start: map-get($container-padding, xl);
+    max-width: map-get($container-max-width, lg);
+  }
+
+  @include respond(xl) {
+    padding-inline: map-get($container-padding, xl);
+    padding-block-start: map-get($container-padding, xl);
+    max-width: map-get($container-max-width, xl);
+  }
+
+  @include respond(xxl) {
+    padding-inline: map-get($container-padding, xxl);
+    padding-block-start: map-get($container-padding, xxl);
+    max-width: map-get($container-max-width, xxl);
+  }
+}
+
