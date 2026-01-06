@@ -7,7 +7,9 @@ defineProps<PlayerCardProps>()
 
 <template>
   <div class="player-card">
-    <Avatar :id="avatarId" :alt="`Avatar ${avatarId}`" size="md" decorative />
+    <div class="player-card__avatar">
+      <Avatar :id="avatarId" :alt="`Avatar ${avatarId}`" size="md" decorative />
+    </div>
 
     <div class="player-card__content">
       <div class="player-card__top">
