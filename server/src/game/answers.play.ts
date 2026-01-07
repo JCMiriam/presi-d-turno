@@ -1,16 +1,21 @@
 import type { ServerRoom } from '../types/room.js'
-import { ensureRenderedAnswerText } from './answers.deck.js' // <-- NUEVO
+import { ensureRenderedAnswerText } from './answers.deck.js'
 
 type CardId = string
 
 function draw(pile: CardId[], n: number): { drawn: CardId[]; remaining: CardId[] } {
-  if (pile.length < n) throw new Error(`No hay suficientes answers para reponer (${n}).`)
+  if (pile.length < n) throw new Error(`No hay suficientes cartas para reponer (${n}).`)
   return { drawn: pile.slice(0, n), remaining: pile.slice(n) }
 }
 
 export function spendAnswers(room: ServerRoom, playerId: string, cardIds: CardId[]): void {
   if (cardIds.length < 1 || cardIds.length > 3) {
     throw new Error('Debes jugar entre 1 y 3 cartas.')
+  }
+
+  const unique = new Set(cardIds)
+  if (unique.size !== cardIds.length) {
+    throw new Error('No puedes repetir la misma carta.')
   }
 
   const hand = room.handsByPlayerId[playerId] ?? []
