@@ -1,7 +1,9 @@
-import { decks } from '@pdt/shared'
+import { loadDecks } from '@pdt/shared/decks'
 import type { ServerRoom } from '../types/room.js'
 
 const CHARACTER_TOKEN = /{{\s*CHARACTER\s*}}/g
+
+const decks = await loadDecks()
 
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!

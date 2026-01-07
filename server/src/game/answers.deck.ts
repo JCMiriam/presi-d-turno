@@ -1,4 +1,4 @@
-import { decks } from '@pdt/shared'
+import { loadDecks } from '@pdt/shared/decks'
 import { renderAnswerText } from './answers.render.js'
 
 import type { ServerRoom } from '../types/room.js'
@@ -6,6 +6,8 @@ import type { ServerRoom } from '../types/room.js'
 type CardId = string
 
 const HAND_SIZE_ON_START = 10
+
+const decks = await loadDecks()
 
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice()
@@ -53,11 +55,12 @@ export function startGameDealAnswers(room: ServerRoom): void {
   const all = buildAllAnswerIds()
 
   if (all.length < needed) {
-    throw new Error(`No hay suficientes cartas para repartir. Necesitas ${needed} y solo hay ${all.length}.`)
+    throw new Error(
+      `No hay suficientes cartas para repartir. Necesitas ${needed} y solo hay ${all.length}.`,
+    )
   }
 
   let drawPile = shuffle(all)
-
 
   room.answersDiscard = []
   room.handsByPlayerId = {}

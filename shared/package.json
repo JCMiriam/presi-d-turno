@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./decks": {
+      "types": "./dist/decks.node.d.ts",
+      "import": "./dist/decks.node.js"
     }
   },
   "scripts": {

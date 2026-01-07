@@ -1,7 +1,3 @@
-import questions from './decks/questions.json'
-import answers from './decks/answers.json'
-import characters from './decks/characters.json'
-
 export const SOCKET_EVENTS = {
   CREATE_ROOM: 'create_room',
   JOIN_ROOM: 'join_room',
@@ -42,12 +38,6 @@ export type Decks = {
   characters: string[]
 }
 
-export const decks: Decks = {
-  questions: questions as string[],
-  answers: answers as string[],
-  characters: characters as string[],
-}
-
 export type CreateRoomPayload = {
   username: string
   avatarId: number
@@ -66,7 +56,9 @@ export type UpdateRoomSettingsPayload = {
   roundsToWin: number
 }
 
-export type CreateRoomAck = { ok: true; roomId: string } | { ok: false; error: 'UNKNOWN' }
+export type CreateRoomAck =
+  | { ok: true; roomId: string }
+  | { ok: false; error: 'UNKNOWN' }
 
 export type JoinRoomAck =
   | { ok: true; roomId: string }
@@ -101,14 +93,21 @@ export interface ClientToServerEvents {
     ack?: (res: CreateRoomAck) => void,
   ) => void
 
-  [SOCKET_EVENTS.JOIN_ROOM]: (payload: JoinRoomPayload, ack?: (res: JoinRoomAck) => void) => void
+  [SOCKET_EVENTS.JOIN_ROOM]: (
+    payload: JoinRoomPayload,
+    ack?: (res: JoinRoomAck) => void,
+  ) => void
 
   [SOCKET_EVENTS.UPDATE_ROOM_SETTINGS]: (
     payload: UpdateRoomSettingsPayload,
     ack?: (res: UpdateRoomSettingsAck) => void,
   ) => void
 
-  [SOCKET_EVENTS.START_GAME]: (payload: StartGamePayload, ack?: (res: StartGameAck) => void) => void
+  [SOCKET_EVENTS.START_GAME]: (
+    payload: StartGamePayload,
+    ack?: (res: StartGameAck) => void,
+  ) => void
+
   [SOCKET_EVENTS.PLAY_ANSWERS]: (
     payload: PlayAnswersPayload,
     ack?: (res: PlayAnswersAck) => void,
