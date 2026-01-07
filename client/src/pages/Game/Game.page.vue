@@ -45,7 +45,6 @@ onBeforeUnmount(() => {
 <template>
   <main style="padding: 16px">
     <h2>Partida · {{ roomStore.roomId }} · ronda {{ roomStore.round }}</h2>
-    <p>Status: {{ roomStore.status }}</p>
 
     <ul>
       <li v-for="card in handStore.hand" :key="card.id">- {{ card.text }}</li>
