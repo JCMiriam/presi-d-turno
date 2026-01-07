@@ -44,6 +44,12 @@ export function createRoom(params?: { pointsToWin?: number; roundsToWin?: number
     answersDiscard: [],
     answerTextById: {},
     handsByPlayerId: {},
+    questionsDrawPile: [],
+    questionsDiscard: [],
+    questionTextById: {},
+    currentQuestionId: null,
+    currentQuestionText: null,
+    requiredAnswers: 1,
   }
 
   rooms.set(roomId, room)
@@ -66,6 +72,9 @@ export function toRoomState(room: ServerRoom): RoomState {
       avatarId: p.avatarId,
       points: p.points,
     })),
+    currentQuestionId: room.currentQuestionId,
+    currentQuestionText: room.currentQuestionText,
+    requiredAnswers: room.requiredAnswers,
   }
 }
 

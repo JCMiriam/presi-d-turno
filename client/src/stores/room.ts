@@ -41,6 +41,10 @@ export const useRoomStore = defineStore('room', {
 
     playersById: {} as PlayersById,
     playerIds: [] as string[],
+
+    currentQuestionId: null as string | null,
+    currentQuestionText: null as string | null,
+    requiredAnswers: 1 as 1 | 2 | 3,
   }),
 
   getters: {
@@ -96,6 +100,10 @@ export const useRoomStore = defineStore('room', {
       const normalized = normalizePlayers(snapshot.players)
       this.playersById = normalized.byId
       this.playerIds = normalized.ids
+
+      this.currentQuestionId = snapshot.currentQuestionId
+      this.currentQuestionText = snapshot.currentQuestionText
+      this.requiredAnswers = snapshot.requiredAnswers
     },
 
     reset() {
@@ -114,6 +122,10 @@ export const useRoomStore = defineStore('room', {
 
       this.playersById = {}
       this.playerIds = []
+
+      this.currentQuestionId = null
+      this.currentQuestionText = null
+      this.requiredAnswers = 1
     },
   },
 })

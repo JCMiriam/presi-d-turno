@@ -20,39 +20,59 @@ function shuffle<T>(arr: T[]): T[] {
 
 function draw(pile: CardId[], n: number): { drawn: CardId[]; remaining: CardId[] } {
   if (pile.length < n) {
-    throw new Error(`No hay suficientes answers. Necesitas ${n}, quedan ${pile.length}.`)
+    throw new Error(`No hay suficientes cartas. Necesitas ${n}, quedan ${pile.length}.`)
   }
   return { drawn: pile.slice(0, n), remaining: pile.slice(n) }
 }
 
-function buildAllAnswerIds(): CardId[] {
-  return decks.answers.map((_: string, i: number) => `a-${i}`)
+function buildAllCardIds(room: ServerRoom): CardId[] {
+  const answerIds = decks.answers.map((_: string, i: number) => `a-${i}`)
+  const characterIds = decks.characters.map((_: string, i: number) => `c-${i}`)
+
+  const playerCardIds = Object.keys(room.playersById).map((playerId) => `p-${playerId}`)
+
+  return [...answerIds, ...characterIds, ...playerCardIds]
 }
 
-function baseAnswerTextFromId(id: CardId): string {
-  // ids: "a-0", "a-1", ...
-  const n = Number(id.replace('a-', ''))
-  if (!Number.isFinite(n)) return id
-  return decks.answers[n] ?? id
+function baseTextFromCardId(room: ServerRoom, id: CardId): string {
+  if (id.startsWith('a-')) {
+    const n = Number(id.slice(2))
+    if (!Number.isFinite(n)) return id
+    return decks.answers[n] ?? id
+  }
+
+  if (id.startsWith('c-')) {
+    const n = Number(id.slice(2))
+    if (!Number.isFinite(n)) return id
+    return decks.characters[n] ?? id
+  }
+
+  if (id.startsWith('p-')) {
+    const playerId = id.slice(2)
+    const p = room.playersById[playerId]
+    return p?.username ?? 'Jugador'
+  }
+
+  return id
 }
 
 export function ensureRenderedAnswerText(room: ServerRoom, id: CardId): string {
   const cached = room.answerTextById?.[id]
   if (cached) return cached
 
-  const base = baseAnswerTextFromId(id)
+  const base = baseTextFromCardId(room, id)
   const rendered = renderAnswerText(room, base)
 
   room.answerTextById ||= {}
   room.answerTextById[id] = rendered
-
   return rendered
 }
 
 export function startGameDealAnswers(room: ServerRoom): void {
   const playerIds = Object.keys(room.playersById)
   const needed = playerIds.length * HAND_SIZE_ON_START
-  const all = buildAllAnswerIds()
+
+  const all = buildAllCardIds(room)
 
   if (all.length < needed) {
     throw new Error(

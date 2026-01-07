@@ -56,9 +56,7 @@ export type UpdateRoomSettingsPayload = {
   roundsToWin: number
 }
 
-export type CreateRoomAck =
-  | { ok: true; roomId: string }
-  | { ok: false; error: 'UNKNOWN' }
+export type CreateRoomAck = { ok: true; roomId: string } | { ok: false; error: 'UNKNOWN' }
 
 export type JoinRoomAck =
   | { ok: true; roomId: string }
@@ -85,6 +83,9 @@ export type RoomState = {
   pointsToWin: number
   roundsToWin: number
   round: number
+  currentQuestionId: string | null
+  currentQuestionText: string | null
+  requiredAnswers: 1 | 2 | 3
 }
 
 export interface ClientToServerEvents {
@@ -93,20 +94,14 @@ export interface ClientToServerEvents {
     ack?: (res: CreateRoomAck) => void,
   ) => void
 
-  [SOCKET_EVENTS.JOIN_ROOM]: (
-    payload: JoinRoomPayload,
-    ack?: (res: JoinRoomAck) => void,
-  ) => void
+  [SOCKET_EVENTS.JOIN_ROOM]: (payload: JoinRoomPayload, ack?: (res: JoinRoomAck) => void) => void
 
   [SOCKET_EVENTS.UPDATE_ROOM_SETTINGS]: (
     payload: UpdateRoomSettingsPayload,
     ack?: (res: UpdateRoomSettingsAck) => void,
   ) => void
 
-  [SOCKET_EVENTS.START_GAME]: (
-    payload: StartGamePayload,
-    ack?: (res: StartGameAck) => void,
-  ) => void
+  [SOCKET_EVENTS.START_GAME]: (payload: StartGamePayload, ack?: (res: StartGameAck) => void) => void
 
   [SOCKET_EVENTS.PLAY_ANSWERS]: (
     payload: PlayAnswersPayload,

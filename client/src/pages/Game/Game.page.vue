@@ -38,6 +38,12 @@ onBeforeUnmount(() => {
 
 <template>
   <main style="padding: 16px">
+    <section v-if="roomStore.currentQuestionText">
+      <h3>Pregunta</h3>
+      <p>{{ roomStore.currentQuestionText }}</p>
+      <p><strong>Respuestas requeridas:</strong> {{ roomStore.requiredAnswers }}</p>
+    </section>
+
     <h2>Partida · {{ roomStore.roomId }} · ronda {{ roomStore.round }}</h2>
 
     <ul>
