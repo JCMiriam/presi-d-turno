@@ -40,5 +40,6 @@ export type ServerRoom = {
   playersById: Record<string, ServerPlayer>
   answersDrawPile: CardId[]
   answersDiscard: CardId[]
+  answerTextById: Record<CardId, string>
   handsByPlayerId: Record<string, CardId[]>
 }

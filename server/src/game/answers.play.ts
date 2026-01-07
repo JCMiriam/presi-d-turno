@@ -1,4 +1,5 @@
 import type { ServerRoom } from '../types/room.js'
+import { ensureRenderedAnswerText } from './answers.deck.js' // <-- NUEVO
 
 type CardId = string
 
@@ -16,21 +17,23 @@ export function spendAnswers(room: ServerRoom, playerId: string, cardIds: CardId
   const handSet = new Set(hand)
 
   for (const id of cardIds) {
-    if (!handSet.has(id))
+    if (!handSet.has(id)) {
       throw new Error(`La carta ${id} no está en la mano del jugador ${playerId}.`)
+    }
   }
 
   const spent = new Set(cardIds)
   room.handsByPlayerId[playerId] = hand.filter((id) => !spent.has(id))
 
-  // “gastadas”
   room.answersDiscard.push(...cardIds)
 
-  // Reponer INMEDIATAMENTE (simplifica y equivale a “final de ronda” en práctica)
-  // Si prefieres estrictamente al final de ronda, lo cambio a pendingRefill.
   const { drawn, remaining } = draw(room.answersDrawPile, cardIds.length)
   room.answersDrawPile = remaining
   room.handsByPlayerId[playerId].push(...drawn)
+
+  for (const id of drawn) {
+    ensureRenderedAnswerText(room, id)
+  }
 
   room.version += 1
 }

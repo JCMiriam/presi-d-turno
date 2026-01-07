@@ -42,6 +42,7 @@ export function createRoom(params?: { pointsToWin?: number; roundsToWin?: number
     playersById: {},
     answersDrawPile: [],
     answersDiscard: [],
+    answerTextById: {},
     handsByPlayerId: {},
   }
 

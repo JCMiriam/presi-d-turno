@@ -2,7 +2,7 @@ import { SOCKET_EVENTS, type StartGamePayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
 import type { ServerRoom } from '../types/room.js'
 import { getRoom } from '../state/rooms.store.js'
-import { startGameDealAnswers } from '../game/answers.deck.js'
+import { startGameDealAnswers, ensureRenderedAnswerText } from '../game/answers.deck.js'
 
 function toRoomState(room: ServerRoom) {
   return {
@@ -58,10 +58,14 @@ export function registerStartGameHandler(io: Server, socket: Socket) {
 
       for (const p of Object.values(room.playersById)) {
         if (!p.socketId) continue
+
         io.to(p.socketId).emit(SOCKET_EVENTS.HAND_STATE, {
           roomId,
           version: room.version,
-          hand: room.handsByPlayerId[p.id] ?? [],
+          hand: (room.handsByPlayerId[p.id] ?? []).map((id) => ({
+            id,
+            text: ensureRenderedAnswerText(room, id),
+          })),
         })
       }
 

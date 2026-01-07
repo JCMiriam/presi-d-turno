@@ -14,14 +14,17 @@ export const SOCKET_EVENTS = {
 } as const
 
 export type StartGamePayload = { roomId: string }
+
 export type StartGameAck =
   | { ok: true }
   | { ok: false; error: 'ROOM_NOT_FOUND' | 'NOT_HOST' | 'UNKNOWN' }
 
+export type HandCard = { id: string; text: string }
+
 export type HandStatePayload = {
   roomId: string
   version: number
-  hand: string[]
+  hand: HandCard[]
 }
 
 export type PlayAnswersPayload = {
