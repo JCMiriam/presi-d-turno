@@ -4,6 +4,8 @@ export type Player = {
   avatarId: string
 }
 
+export type CardId = string
+
 export type Room = {
   version: number
   hostId: string
@@ -36,4 +38,7 @@ export type ServerRoom = {
   roundsToWin: number
   round: number
   playersById: Record<string, ServerPlayer>
+  answersDrawPile: CardId[]
+  answersDiscard: CardId[]
+  handsByPlayerId: Record<string, CardId[]>
 }

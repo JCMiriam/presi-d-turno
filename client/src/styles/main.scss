@@ -66,6 +66,7 @@ table {
 
 :focus {
   outline: 2px solid var(--green-water);
+  outline-offset: 2px;
 }
 
 .no-scroll {
