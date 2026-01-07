@@ -2,7 +2,10 @@ import { SOCKET_EVENTS, type StartGamePayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
 import type { ServerRoom } from '../types/room.js'
 import { getRoom } from '../state/rooms.store.js'
+
 import { startGameDealAnswers, ensureRenderedAnswerText } from '../game/answers.deck.js'
+import { initQuestionsForGame, ensureRenderedQuestion } from '../game/questions.deck.js'
+import { startNextRoundQuestion } from '../game/questions.round.js'
 
 function toRoomState(room: ServerRoom) {
   return {
@@ -14,6 +17,11 @@ function toRoomState(room: ServerRoom) {
     pointsToWin: room.pointsToWin,
     roundsToWin: room.roundsToWin,
     round: room.round,
+
+    currentQuestionId: room.currentQuestionId,
+    currentQuestionText: room.currentQuestionText,
+    requiredAnswers: room.requiredAnswers,
+
     players: Object.values(room.playersById).map((p) => ({
       id: p.id,
       username: p.username,
@@ -21,10 +29,6 @@ function toRoomState(room: ServerRoom) {
       points: p.points,
     })),
   }
-}
-
-function bump(room: ServerRoom) {
-  room.version += 1
 }
 
 export function registerStartGameHandler(io: Server, socket: Socket) {
@@ -52,7 +56,8 @@ export function registerStartGameHandler(io: Server, socket: Socket) {
 
       startGameDealAnswers(room)
 
-      bump(room)
+      initQuestionsForGame(room)
+      startNextRoundQuestion(room)
 
       io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, toRoomState(room))
 

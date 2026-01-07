@@ -42,4 +42,10 @@ export type ServerRoom = {
   answersDiscard: CardId[]
   answerTextById: Record<CardId, string>
   handsByPlayerId: Record<string, CardId[]>
+  questionsDrawPile: CardId[]
+  questionsDiscard: CardId[]
+  questionTextById: Record<CardId, string>
+  currentQuestionId: CardId | null
+  currentQuestionText: string | null
+  requiredAnswers: 1 | 2 | 3
 }
