@@ -1,10 +1,52 @@
+import questions from './decks/questions.json'
+import answers from './decks/answers.json'
+import characters from './decks/characters.json'
+
 export const SOCKET_EVENTS = {
   CREATE_ROOM: 'create_room',
   JOIN_ROOM: 'join_room',
   ROOM_STATE: 'room_state',
   UPDATE_ROOM_SETTINGS: 'update_room_settings',
+  START_GAME: 'start_game',
+  HAND_STATE: 'hand_state',
+  PLAY_ANSWERS: 'play_answers',
   ERROR: 'error',
 } as const
+
+export type StartGamePayload = { roomId: string }
+
+export type StartGameAck =
+  | { ok: true }
+  | { ok: false; error: 'ROOM_NOT_FOUND' | 'NOT_HOST' | 'UNKNOWN' }
+
+export type HandCard = { id: string; text: string }
+
+export type HandStatePayload = {
+  roomId: string
+  version: number
+  hand: HandCard[]
+}
+
+export type PlayAnswersPayload = {
+  roomId: string
+  cardIds: string[]
+}
+
+export type PlayAnswersAck =
+  | { ok: true }
+  | { ok: false; error: 'ROOM_NOT_FOUND' | 'NOT_IN_ROOM' | 'INVALID_PLAY' | 'UNKNOWN' }
+
+export type Decks = {
+  questions: string[]
+  answers: string[]
+  characters: string[]
+}
+
+export const decks: Decks = {
+  questions: questions as string[],
+  answers: answers as string[],
+  characters: characters as string[],
+}
 
 export type CreateRoomPayload = {
   username: string
@@ -65,9 +107,16 @@ export interface ClientToServerEvents {
     payload: UpdateRoomSettingsPayload,
     ack?: (res: UpdateRoomSettingsAck) => void,
   ) => void
+
+  [SOCKET_EVENTS.START_GAME]: (payload: StartGamePayload, ack?: (res: StartGameAck) => void) => void
+  [SOCKET_EVENTS.PLAY_ANSWERS]: (
+    payload: PlayAnswersPayload,
+    ack?: (res: PlayAnswersAck) => void,
+  ) => void
 }
 
 export interface ServerToClientEvents {
   [SOCKET_EVENTS.ROOM_STATE]: (payload: RoomState) => void
   [SOCKET_EVENTS.ERROR]: (message: string) => void
+  [SOCKET_EVENTS.HAND_STATE]: (payload: HandStatePayload) => void
 }

@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { socket } from '@sockets/socket'
-import { SOCKET_EVENTS, type RoomState, type JoinRoomPayload } from '@pdt/shared'
+import {
+  SOCKET_EVENTS,
+  type RoomState,
+  type JoinRoomPayload,
+  type HandStatePayload,
+} from '@pdt/shared'
 
 import { userState, hydrateUserFromStorage, touchUserSession } from '../../state'
 import { useRoomStore } from '@stores/room'
 import { usePlayersPanelStore } from '@stores/playersPanel'
+import { useHandStore } from '@stores/hand'
+
 import { useBreakpoint } from '@composables'
 
 import { Button } from '@components'
@@ -18,6 +25,7 @@ const route = useRoute()
 const router = useRouter()
 const roomStore = useRoomStore()
 const playersPanel = usePlayersPanelStore()
+const handStore = useHandStore()
 
 const { isAbove } = useBreakpoint()
 
@@ -57,7 +65,6 @@ function updateRounds(value: number) {
   )
 }
 
-
 async function copyInviteLink() {
   try {
     await navigator.clipboard.writeText(inviteUrl.value)
@@ -82,6 +89,18 @@ async function copyInviteLink() {
       window.setTimeout(() => (inviteStatus.value = 'idle'), 2000)
     }
   }
+}
+
+function startMatch() {
+  if (!isHost.value) return
+  if (!roomStore.roomId) return
+  if (roomStore.status !== 'lobby') return
+
+  socket.emit(SOCKET_EVENTS.START_GAME, { roomId: roomStore.roomId }, (res) => {
+    if (!res?.ok) {
+      console.warn('start_game failed:', res?.error)
+    }
+  })
 }
 
 function handleRoomState(snapshot: RoomState) {
@@ -112,6 +131,12 @@ function handleConnect() {
   joinRoom()
 }
 
+function handleHandState(payload: HandStatePayload) {
+  if (roomStore.roomId && payload.roomId !== roomStore.roomId) return
+
+  handStore.setHand({ hand: payload.hand, version: payload.version })
+}
+
 onMounted(() => {
   hydrateUserFromStorage()
 
@@ -136,6 +161,8 @@ onMounted(() => {
   socket.on('connect', handleConnect)
 
   if (socket.connected) handleConnect()
+
+  socket.on(SOCKET_EVENTS.HAND_STATE, handleHandState)
 })
 
 onBeforeUnmount(() => {
@@ -143,7 +170,17 @@ onBeforeUnmount(() => {
   socket.off(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
   socket.off('connect', handleConnect)
   playersPanel.unmount()
+  socket.off(SOCKET_EVENTS.HAND_STATE, handleHandState)
 })
+
+watch(
+  () => roomStore.status,
+  (s) => {
+    if (s === 'in_game') {
+      router.push({ name: 'game', query: { roomId: roomStore.roomId! } })
+    }
+  },
+)
 </script>
 
 <template>
@@ -183,7 +220,7 @@ onBeforeUnmount(() => {
         variant="primary"
         appearance="solid"
         :disabled="!isHost"
-        @click="copyInviteLink"
+        @click="startMatch"
       ></Button>
 
       <RoundsSelector

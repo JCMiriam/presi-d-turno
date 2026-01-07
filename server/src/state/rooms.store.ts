@@ -40,6 +40,10 @@ export function createRoom(params?: { pointsToWin?: number; roundsToWin?: number
     pointsToWin: params?.pointsToWin ?? 5,
     round: 0,
     playersById: {},
+    answersDrawPile: [],
+    answersDiscard: [],
+    answerTextById: {},
+    handsByPlayerId: {},
   }
 
   rooms.set(roomId, room)
