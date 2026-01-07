@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node scripts/copy-decks.mjs",
     "dev": "tsc -p tsconfig.json -w"
   },
   "devDependencies": {
