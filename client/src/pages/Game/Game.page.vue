@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeUnmount, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { socket } from '@sockets/socket'
 import { SOCKET_EVENTS, type HandStatePayload, type RoomState } from '@pdt/shared'
@@ -8,15 +8,9 @@ import { SOCKET_EVENTS, type HandStatePayload, type RoomState } from '@pdt/share
 import { useRoomStore } from '@stores/room'
 import { useHandStore } from '@stores/hand'
 
-const route = useRoute()
 const router = useRouter()
 const roomStore = useRoomStore()
 const handStore = useHandStore()
-
-const roomId = computed(() => {
-  const r = route.query.roomId
-  return typeof r === 'string' && r.trim() ? r.trim().toUpperCase() : null
-})
 
 function handleRoomState(snapshot: RoomState) {
   roomStore.applySnapshot(snapshot)
