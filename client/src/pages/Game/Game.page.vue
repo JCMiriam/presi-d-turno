@@ -59,14 +59,6 @@ function rejoinRoomIfPossible() {
     myAvatarId === null ||
     myAvatarId === undefined
   ) {
-    console.log('[GAME] rejoin skipped (missing join payload)', {
-      roomId,
-      myPlayerId,
-      hasToken: Boolean(myPlayerToken),
-      myUsername,
-      myAvatarId,
-      socketId: socket.id,
-    })
     return
   }
 
@@ -78,16 +70,7 @@ function rejoinRoomIfPossible() {
     avatarId: myAvatarId,
   }
 
-  console.log('[GAME] rejoin -> join_room', {
-    roomId,
-    playerId: myPlayerId,
-    username: myUsername,
-    avatarId: myAvatarId,
-    socketId: socket.id,
-  })
-
   socket.emit(SOCKET_EVENTS.JOIN_ROOM, payload, (res: JoinRoomAck) => {
-    console.log('[GAME] rejoin ack', res)
     if (!res?.ok) {
       errorMsg.value = `REJOIN_${res?.error ?? 'UNKNOWN'}`
       return
@@ -99,20 +82,9 @@ function rejoinRoomIfPossible() {
 function handleRoomState(snapshot: RoomState) {
   const prevRound = roomStore.round
 
-  console.log('[ROOM_STATE] incoming', {
-    roomId: snapshot.roomId,
-    version: snapshot.version,
-    status: snapshot.status,
-    round: snapshot.round,
-    presiId: snapshot.presiId,
-    requiredAnswers: snapshot.requiredAnswers,
-    submissions: snapshot.roundSubmissions?.length ?? 0,
-  })
-
   roomStore.applySnapshot(snapshot)
 
   if (snapshot.round !== prevRound) {
-    console.log('[ROOM_STATE] round changed', { prevRound, nextRound: snapshot.round })
     selectedId.value = null
     hasSubmitted.value = false
     pickedSubmissionId.value = null
@@ -120,39 +92,17 @@ function handleRoomState(snapshot: RoomState) {
   }
 
   if (snapshot.status === 'lobby') {
-    console.log('[ROOM_STATE] back to lobby')
     router.replace({ name: 'lobby', query: { roomId: snapshot.roomId } })
   }
 }
 
 function handleHandState(payload: HandStatePayload) {
-  console.log('[HAND_STATE] incoming', {
-    roomId: payload.roomId,
-    version: payload.version,
-    handLen: payload.hand?.length ?? 0,
-    first: payload.hand?.[0],
-    firstType: typeof payload.hand?.[0],
-  })
-
-  if (roomStore.roomId && payload.roomId !== roomStore.roomId) {
-    console.log('[HAND_STATE] ignored (different room)', {
-      storeRoomId: roomStore.roomId,
-      payloadRoomId: payload.roomId,
-    })
-    return
-  }
+  if (roomStore.roomId && payload.roomId !== roomStore.roomId) return
 
   handStore.setHand({ hand: payload.hand, version: payload.version })
 }
 
 onMounted(() => {
-  console.log('[GAME] mounted', {
-    myPlayerId: roomStore.myPlayerId,
-    mySocketId: roomStore.mySocketId,
-    myEffectiveId: roomStore.myEffectiveId,
-    socketId: socket.id,
-  })
-
   socket.on(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
   socket.on(SOCKET_EVENTS.HAND_STATE, handleHandState)
 
@@ -162,7 +112,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  console.log('[GAME] before unmount')
   socket.off(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
   socket.off(SOCKET_EVENTS.HAND_STATE, handleHandState)
   socket.off('connect', rejoinRoomIfPossible)
@@ -198,8 +147,6 @@ function playSelectedCard() {
     SOCKET_EVENTS.PLAY_ANSWERS,
     { roomId: roomStore.roomId, cardIds: [selectedId.value] },
     (res: any) => {
-      console.log('[PLAY] ack', res)
-
       if (!res?.ok) {
         errorMsg.value = res?.error ?? 'UNKNOWN'
         return
@@ -223,7 +170,6 @@ function confirmWinner() {
     SOCKET_EVENTS.PICK_WINNER,
     { roomId: roomStore.roomId, submissionId: pickedSubmissionId.value },
     (res: any) => {
-      console.log('[PRESI] PICK_WINNER ack', res)
       if (!res?.ok) return
       pickedSubmissionId.value = null
     },
