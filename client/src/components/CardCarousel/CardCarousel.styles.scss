@@ -1,0 +1,82 @@
+.pdt-card-carousel {
+  position: relative;
+
+  &__scroller {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    // “peek” lateral
+    padding: 0 18px 10px;
+    cursor: grab;
+
+    &.is-dragging {
+      cursor: grabbing;
+    }
+
+    // Ocultar scrollbar
+    scrollbar-width: none; // Firefox
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__track {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 12px;
+
+    // móvil: 3 visibles (con peek por el padding)
+    grid-auto-columns: calc((100% - (12px * 2)) / 3);
+  }
+
+  &__item {
+    scroll-snap-align: start;
+  }
+
+  // Tablet: 5 visibles
+  @media (min-width: 768px) {
+    &__scroller {
+      padding: 0 22px 12px;
+    }
+
+    &__track {
+      grid-auto-columns: calc((100% - (12px * 4)) / 5);
+    }
+  }
+
+  // PC: 10 visibles
+  @media (min-width: 1200px) {
+    &__scroller {
+      padding: 0 26px 12px;
+    }
+
+    &__track {
+      grid-auto-columns: calc((100% - (12px * 9)) / 10);
+    }
+  }
+
+  // Degradados laterales para sugerir “hay scroll”
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 22px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+  }
+}

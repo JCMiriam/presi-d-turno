@@ -10,9 +10,11 @@ import { JoinWithIdModal } from './Components/JoinWithIdModal'
 
 import { setUser } from '../../state/index'
 import { SOCKET_EVENTS } from '@pdt/shared'
+import { useRoomStore } from '@stores/room'
 
 const route = useRoute()
 const router = useRouter()
+const roomStore = useRoomStore()
 
 const roomIdFromQuery = computed(() => {
   const value = route.query.roomId
@@ -99,6 +101,17 @@ function buildOrReuseUserDraft() {
   return created
 }
 
+function persistSessionToRoomStore(user: {
+  playerId: string
+  playerToken: string
+  username: string
+  avatarId: number
+}) {
+  roomStore.setMyPlayerId(user.playerId)
+  roomStore.setMyPlayerToken(user.playerToken)
+  roomStore.setMyProfile({ username: user.username, avatarId: user.avatarId })
+}
+
 function openJoinWithIdModal() {
   joinError.value = null
   if (!validate() || isSubmitting.value || isJoiningById.value) return
@@ -125,6 +138,7 @@ function submitJoinWithId() {
 
   const user = buildOrReuseUserDraft()
   setUser(user)
+  persistSessionToRoomStore(user)
 
   socket.emit(
     SOCKET_EVENTS.JOIN_ROOM,
@@ -142,6 +156,8 @@ function submitJoinWithId() {
         joinError.value = res?.error ?? 'No existe esa sala (o no se pudo unir).'
         return
       }
+
+      roomStore.roomId = roomId
 
       isJoinWithIdOpen.value = false
 
@@ -162,6 +178,7 @@ function onSubmit() {
 
   const user = buildOrReuseUserDraft()
   setUser(user)
+  persistSessionToRoomStore(user)
 
   if (mode.value === 'create') {
     socket.emit(
@@ -177,6 +194,8 @@ function onSubmit() {
           error.value = 'No se pudo crear la sala. Inténtalo de nuevo.'
           return
         }
+
+        roomStore.roomId = res.roomId
 
         router.push({
           name: 'lobby',
@@ -197,14 +216,34 @@ function onSubmit() {
     return
   }
 
-  isSubmitting.value = false
-  router.push({
-    name: 'lobby',
-    query: {
+  socket.emit(
+    SOCKET_EVENTS.JOIN_ROOM,
+    {
       roomId,
-      mode: 'join',
+      playerId: user.playerId,
+      playerToken: user.playerToken,
+      username: user.username,
+      avatarId: user.avatarId,
     },
-  })
+    (res: any) => {
+      isSubmitting.value = false
+
+      if (!res || !res.ok) {
+        error.value = res?.error ?? 'No existe esa sala (o no se pudo unir).'
+        return
+      }
+
+      roomStore.roomId = roomId
+
+      router.push({
+        name: 'lobby',
+        query: {
+          roomId,
+          mode: 'join',
+        },
+      })
+    },
+  )
 }
 
 function openGallery() {

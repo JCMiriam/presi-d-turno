@@ -1,0 +1,82 @@
+.pdt-card {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+
+  padding: 14px;
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    transform 0.08s ease,
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+  }
+
+  &__text {
+    display: block;
+    font-size: 15px;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.92);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  &.is-selected {
+    border-color: rgba(140, 255, 170, 0.55);
+    background: rgba(140, 255, 170, 0.12);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.is-readonly {
+    opacity: 0.85;
+    cursor: default;
+  }
+
+  &--sm {
+    padding: 10px 12px;
+
+    .pdt-card__text {
+      font-size: 14px;
+    }
+  }
+
+  &--md {
+    padding: 14px;
+
+    .pdt-card__text {
+      font-size: 15px;
+    }
+  }
+
+  &--lg {
+    padding: 16px;
+
+    .pdt-card__text {
+      font-size: 16px;
+    }
+  }
+}

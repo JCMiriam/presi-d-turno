@@ -16,6 +16,13 @@ export type Room = {
   round: number
 }
 
+export type RoundSubmissionInternal = {
+  id: string
+  playerId: string
+  cardIds: CardId[]
+  text: string
+}
+
 export type ServerPlayer = {
   id: string
   token: string
@@ -48,4 +55,5 @@ export type ServerRoom = {
   currentQuestionId: CardId | null
   currentQuestionText: string | null
   requiredAnswers: 1 | 2 | 3
+  roundSubmissions: RoundSubmissionInternal[]
 }

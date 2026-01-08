@@ -37,7 +37,10 @@ export const useRoomStore = defineStore('room', {
     round: 0,
 
     myPlayerId: null as string | null,
+    myPlayerToken: null as string | null,
     mySocketId: null as string | null,
+    myUsername: null as string | null,
+    myAvatarId: null as number | null,
 
     playersById: {} as PlayersById,
     playerIds: [] as string[],
@@ -45,6 +48,8 @@ export const useRoomStore = defineStore('room', {
     currentQuestionId: null as string | null,
     currentQuestionText: null as string | null,
     requiredAnswers: 1 as 1 | 2 | 3,
+
+    roundSubmissions: [] as RoomState['roundSubmissions'],
   }),
 
   getters: {
@@ -72,8 +77,17 @@ export const useRoomStore = defineStore('room', {
       this.myPlayerId = id
     },
 
+    setMyPlayerToken(token: string) {
+      this.myPlayerToken = token
+    },
+
     setMySocketId(id: string) {
       this.mySocketId = id
+    },
+
+    setMyProfile(payload: { username: string; avatarId: number }) {
+      this.myUsername = payload.username
+      this.myAvatarId = payload.avatarId
     },
 
     setRoundsToWin(value: number) {
@@ -92,10 +106,7 @@ export const useRoomStore = defineStore('room', {
       this.pointsToWin = snapshot.pointsToWin
       this.round = snapshot.round
 
-      this.roundsToWin =
-        typeof (snapshot as any).roundsToWin === 'number'
-          ? (snapshot as any).roundsToWin
-          : this.roundsToWin
+      this.roundsToWin = snapshot.roundsToWin
 
       const normalized = normalizePlayers(snapshot.players)
       this.playersById = normalized.byId
@@ -104,6 +115,8 @@ export const useRoomStore = defineStore('room', {
       this.currentQuestionId = snapshot.currentQuestionId
       this.currentQuestionText = snapshot.currentQuestionText
       this.requiredAnswers = snapshot.requiredAnswers
+
+      this.roundSubmissions = snapshot.roundSubmissions ?? []
     },
 
     reset() {
@@ -118,7 +131,10 @@ export const useRoomStore = defineStore('room', {
       this.round = 0
 
       this.myPlayerId = null
+      this.myPlayerToken = null
       this.mySocketId = null
+      this.myUsername = null
+      this.myAvatarId = null
 
       this.playersById = {}
       this.playerIds = []
@@ -126,6 +142,8 @@ export const useRoomStore = defineStore('room', {
       this.currentQuestionId = null
       this.currentQuestionText = null
       this.requiredAnswers = 1
+
+      this.roundSubmissions = []
     },
   },
 })

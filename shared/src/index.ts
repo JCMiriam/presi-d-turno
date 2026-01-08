@@ -6,6 +6,7 @@ export const SOCKET_EVENTS = {
   START_GAME: 'start_game',
   HAND_STATE: 'hand_state',
   PLAY_ANSWERS: 'play_answers',
+  PICK_WINNER: 'pick_winner',
   ERROR: 'error',
 } as const
 
@@ -31,6 +32,18 @@ export type PlayAnswersPayload = {
 export type PlayAnswersAck =
   | { ok: true }
   | { ok: false; error: 'ROOM_NOT_FOUND' | 'NOT_IN_ROOM' | 'INVALID_PLAY' | 'UNKNOWN' }
+
+export type PickWinnerPayload = {
+  roomId: string
+  submissionId: string
+}
+
+export type PickWinnerAck =
+  | { ok: true }
+  | {
+      ok: false
+      error: 'ROOM_NOT_FOUND' | 'NOT_IN_ROOM' | 'NOT_PRESI' | 'INVALID_PICK' | 'UNKNOWN'
+    }
 
 export type Decks = {
   questions: string[]
@@ -73,6 +86,11 @@ export type Player = {
   points: number
 }
 
+export type RoundSubmissionPublic = {
+  id: string
+  text: string
+}
+
 export type RoomState = {
   roomId: string
   version: number
@@ -86,6 +104,7 @@ export type RoomState = {
   currentQuestionId: string | null
   currentQuestionText: string | null
   requiredAnswers: 1 | 2 | 3
+  roundSubmissions: RoundSubmissionPublic[]
 }
 
 export interface ClientToServerEvents {
@@ -106,6 +125,11 @@ export interface ClientToServerEvents {
   [SOCKET_EVENTS.PLAY_ANSWERS]: (
     payload: PlayAnswersPayload,
     ack?: (res: PlayAnswersAck) => void,
+  ) => void
+
+  [SOCKET_EVENTS.PICK_WINNER]: (
+    payload: PickWinnerPayload,
+    ack?: (res: PickWinnerAck) => void,
   ) => void
 }
 
