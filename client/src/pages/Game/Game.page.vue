@@ -179,11 +179,7 @@ function confirmWinner() {
 
 <template>
   <main style="padding: 16px">
-    <p style="opacity: 0.75; margin-top: 8px">
-      myEffectiveId={{ roomStore.myEffectiveId }} · presiId={{ roomStore.presiId }} · isPresi={{ isPresi }} ·
-      hasSubmitted={{ hasSubmitted }} · required={{ roomStore.requiredAnswers }} · selectedId={{ selectedId }} ·
-      canPlay={{ canPlay }} · submissions={{ submissions.length }} · handResolved={{ myHandCards.length }}
-    </p>
+
 
     <section v-if="roomStore.currentQuestionText">
       <h3>Pregunta</h3>
