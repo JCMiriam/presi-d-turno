@@ -18,8 +18,7 @@
       "@sockets/*": ["src/sockets/*"],
       "@state/*": ["src/state/*"],
       "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"],
-      "@shared": ["../shared/src"]
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"]
