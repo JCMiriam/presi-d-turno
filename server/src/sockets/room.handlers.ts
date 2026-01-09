@@ -1,28 +1,9 @@
 import { SOCKET_EVENTS, type JoinRoomPayload, type UpdateRoomSettingsPayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
 import type { ServerRoom } from '../types/index.js'
-import { getRoom } from '../state/rooms.store.js'
+import { getRoom, toRoomState } from '../state/rooms.store.js'
 
 const PURGE_AFTER_MS = 45_000
-
-function toRoomState(room: ServerRoom) {
-  return {
-    roomId: room.roomId,
-    version: room.version,
-    hostId: room.hostId,
-    presiId: room.presiId,
-    status: room.status,
-    pointsToWin: room.pointsToWin,
-    roundsToWin: room.roundsToWin,
-    round: room.round,
-    players: Object.values(room.playersById).map((p) => ({
-      id: p.id,
-      username: p.username,
-      avatarId: p.avatarId,
-      points: p.points,
-    })),
-  }
-}
 
 function bump(room: ServerRoom) {
   room.version += 1

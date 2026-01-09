@@ -1,27 +1,9 @@
 import { SOCKET_EVENTS, type PlayAnswersPayload } from '@pdt/shared'
 import type { Server, Socket } from 'socket.io'
-import { getRoom } from '../state/rooms.store.js'
+import { getRoom, toRoomState } from '../state/rooms.store.js'
 import { spendAnswers } from '../game/answers.play.js'
-import type { ServerRoom } from '../types/room.js'
-
-function toRoomState(room: ServerRoom) {
-  return {
-    roomId: room.roomId,
-    version: room.version,
-    hostId: room.hostId,
-    presiId: room.presiId,
-    status: room.status,
-    pointsToWin: room.pointsToWin,
-    roundsToWin: room.roundsToWin,
-    round: room.round,
-    players: Object.values(room.playersById).map((p) => ({
-      id: p.id,
-      username: p.username,
-      avatarId: p.avatarId,
-      points: p.points,
-    })),
-  }
-}
+import { randomUUID } from 'crypto'
+import { ensureRenderedAnswerText } from '@app/game/answers.deck.js'
 
 export function registerPlayAnswersHandler(io: Server, socket: Socket) {
   socket.on(SOCKET_EVENTS.PLAY_ANSWERS, (payload: PlayAnswersPayload, ack) => {
@@ -43,14 +25,39 @@ export function registerPlayAnswersHandler(io: Server, socket: Socket) {
       const room = getRoom(roomId)
       if (!room) return ack?.({ ok: false, error: 'ROOM_NOT_FOUND' })
 
+      room.roundSubmissions = room.roundSubmissions ?? []
+      const alreadyPlayed = room.roundSubmissions.some((s) => s.playerId === socketPlayerId)
+      if (alreadyPlayed) {
+        return ack?.({ ok: false, error: 'INVALID_PLAY' })
+      }
+
       spendAnswers(room, socketPlayerId, cardIds)
+
+      const texts = cardIds.map((id) => room.answerTextById[id])
+      if (texts.some((t) => typeof t !== 'string')) {
+        return ack?.({ ok: false, error: 'INVALID_PLAY' })
+      }
+
+      const text = texts.join('\n')
+
+      room.roundSubmissions.push({
+        id: randomUUID(),
+        playerId: socketPlayerId,
+        cardIds,
+        text,
+      })
+
+      room.version += 1
 
       const player = room.playersById[socketPlayerId]
       if (player?.socketId) {
         io.to(player.socketId).emit(SOCKET_EVENTS.HAND_STATE, {
           roomId,
           version: room.version,
-          hand: room.handsByPlayerId[socketPlayerId] ?? [],
+          hand: (room.handsByPlayerId[socketPlayerId] ?? []).map((id) => ({
+            id,
+            text: ensureRenderedAnswerText(room, id),
+          })),
         })
       }
 

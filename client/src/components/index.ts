@@ -8,3 +8,5 @@ export { default as PlayersPanel } from './PlayersPanel/PlayersPanel.component.v
 export { default as PlayersPanelSingleton } from './PlayersPanel/PlayersPanelSingleton.component.vue'
 export { default as PlayerCard } from './PlayerCard/PlayerCard.component.vue'
 export { default as Overlay } from './Overlay/Overlay.component.vue'
+export { default as AnswerCard } from './AnswerCard/AnswerCard.component.vue'
+export { default as CardCarousel } from './CardCarousel/CardCarousel.component.vue'

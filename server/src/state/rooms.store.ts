@@ -1,4 +1,4 @@
-import type { RoomState, Player } from '@pdt/shared'
+import type { RoomState } from '@pdt/shared'
 import type { ServerRoom, ServerPlayer } from '../types/room.js'
 import { generateRoomId } from '../utils/roomId.js'
 
@@ -50,6 +50,7 @@ export function createRoom(params?: { pointsToWin?: number; roundsToWin?: number
     currentQuestionId: null,
     currentQuestionText: null,
     requiredAnswers: 1,
+    roundSubmissions: [],
   }
 
   rooms.set(roomId, room)
@@ -75,6 +76,10 @@ export function toRoomState(room: ServerRoom): RoomState {
     currentQuestionId: room.currentQuestionId,
     currentQuestionText: room.currentQuestionText,
     requiredAnswers: room.requiredAnswers,
+    roundSubmissions: room.roundSubmissions.map((s) => ({
+      id: s.id,
+      text: s.text,
+    })),
   }
 }
 

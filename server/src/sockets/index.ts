@@ -4,6 +4,7 @@ import { registerRoomHandlers } from './room.handlers.js'
 import { registerCreateRoomHandler } from './createRoom.handlers.js'
 import { registerStartGameHandler } from './startGame.handlers.js'
 import { registerPlayAnswersHandler } from './playAnswers.handlers.js'
+import { registerPickWinnerHandler } from './pickWinner.handler.js'
 
 type InterServerEvents = Record<string, never>
 
@@ -22,6 +23,7 @@ export function registerSocketHandlers(
       registerRoomHandlers(io, socket)
       registerStartGameHandler(io, socket)
       registerPlayAnswersHandler(io, socket)
+      registerPickWinnerHandler(io, socket)
     },
   )
 }
