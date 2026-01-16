@@ -40,11 +40,11 @@
     word-break: break-word;
   }
 
-  &.is-selected {
-    border-color: rgba(140, 255, 170, 0.55);
-    background: rgba(140, 255, 170, 0.12);
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
-  }
+  // &.is-selected {
+  //   border-color: rgba(140, 255, 170, 0.55);
+  //   background: rgba(140, 255, 170, 0.12);
+  //   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
+  // }
 
   &.is-disabled {
     opacity: 0.5;
@@ -54,29 +54,5 @@
   &.is-readonly {
     opacity: 0.85;
     cursor: default;
-  }
-
-  &--sm {
-    padding: 10px 12px;
-
-    .pdt-card__text {
-      font-size: 14px;
-    }
-  }
-
-  &--md {
-    padding: 14px;
-
-    .pdt-card__text {
-      font-size: 15px;
-    }
-  }
-
-  &--lg {
-    padding: 16px;
-
-    .pdt-card__text {
-      font-size: 16px;
-    }
   }
 }

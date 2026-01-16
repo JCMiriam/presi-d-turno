@@ -18,14 +18,13 @@ const isInteractive = computed(() => !props.disabled && !props.readOnly)
 
 const classes = computed(() => [
   'pdt-card',
-  `pdt-card--${props.size}`,
   props.selected && 'is-selected',
   props.disabled && 'is-disabled',
   props.readOnly && 'is-readonly',
 ])
 
 function onActivate() {
-  if (!isInteractive.value) return
+  if (!isInteractive.value || !props.id) return
   emit('click', props.id)
   emit('toggle', { id: props.id, selected: !props.selected })
 }

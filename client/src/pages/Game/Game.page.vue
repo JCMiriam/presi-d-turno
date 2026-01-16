@@ -13,14 +13,17 @@ import {
 
 import { useRoomStore } from '@stores/room'
 import { useHandStore } from '@stores/hand'
+import { usePlayersPanelStore } from '@stores/playersPanel'
 
-import { CardCarousel, AnswerCard } from '@components'
+import { CardCarousel, AnswerCard, Button } from '@components'
 
 type AnswerCardT = { id: string; text: string }
 
 const router = useRouter()
 const roomStore = useRoomStore()
 const handStore = useHandStore()
+
+const playersPanel = usePlayersPanelStore()
 
 const selectedId = ref<string | null>(null)
 const hasSubmitted = ref(false)
@@ -109,12 +112,15 @@ onMounted(() => {
   rejoinRoomIfPossible()
 
   socket.on('connect', rejoinRoomIfPossible)
+
+  playersPanel.mount('#lobby-players-panel-slot', 'lobby-modal', true)
 })
 
 onBeforeUnmount(() => {
   socket.off(SOCKET_EVENTS.ROOM_STATE, handleRoomState)
   socket.off(SOCKET_EVENTS.HAND_STATE, handleHandState)
   socket.off('connect', rejoinRoomIfPossible)
+  playersPanel.unmount()
 })
 
 function onToggle({ id, selected }: { id: string; selected: boolean }) {
@@ -178,25 +184,21 @@ function confirmWinner() {
 </script>
 
 <template>
-  <main style="padding: 16px">
+  <main class="game-page">
+    <h4 class="game-page__title">#{{ roomStore.roomId }} - Ronda {{ roomStore.round }}</h4>
 
-
-    <section v-if="roomStore.currentQuestionText">
-      <h3>Pregunta</h3>
-      <p>{{ roomStore.currentQuestionText }}</p>
-      <p><strong>Respuestas requeridas:</strong> {{ roomStore.requiredAnswers }}</p>
+    <section v-if="roomStore.currentQuestionText" class="game-page__question">
+      <AnswerCard :text="roomStore.currentQuestionText"></AnswerCard>
     </section>
-
-    <h2>Partida · {{ roomStore.roomId }} · ronda {{ roomStore.round }}</h2>
 
     <p v-if="errorMsg" style="margin-top: 8px; color: #ffb3b3">Error: {{ errorMsg }}</p>
 
-    <section v-if="isPresi" style="margin-top: 16px">
+    <section v-if="isPresi" class="game-page__answers-list">
       <h3>Cartas jugadas</h3>
 
       <p v-if="submissions.length === 0">Esperando cartas…</p>
 
-      <div v-else style="display: grid; gap: 12px">
+      <div v-else class="game-page__answers-list--list">
         <AnswerCard
           v-for="s in submissions"
           :key="s.id"
@@ -207,12 +209,19 @@ function confirmWinner() {
         />
       </div>
 
-      <button style="margin-top: 12px" :disabled="!pickedSubmissionId" @click="confirmWinner">
-        Elegir ganadora
-      </button>
+      <Button
+        class="game-page__winner-card-btn"
+        text="Elegir ganadora"
+        size="full"
+        variant="primary"
+        appearance="solid"
+        color="pure-white"
+        :disabled="!pickedSubmissionId"
+        @click="confirmWinner"
+      ></Button>
     </section>
 
-    <section v-else style="margin-top: 16px">
+    <section v-else class="game-page__player-cards">
       <p v-if="myHandCards.length === 0" style="opacity: 0.8">Cargando mano…</p>
 
       <CardCarousel
@@ -223,13 +232,27 @@ function confirmWinner() {
         @toggle="onToggle"
       />
 
-      <button style="margin-top: 12px" :disabled="!canPlay" @click="playSelectedCard">
-        Jugar carta
-      </button>
+      <Button
+        text="Jugar carta"
+        size="full"
+        variant="primary"
+        appearance="solid"
+        color="pure-white"
+        :disabled="!canPlay"
+        @click="playSelectedCard"
+      ></Button>
 
       <p v-if="hasSubmitted" style="margin-top: 8px; opacity: 0.8">
         Carta enviada. Esperando al presi…
       </p>
     </section>
+
+    <section class="game-page__players-list">
+      <div id="lobby-players-panel-slot"></div>
+    </section>
   </main>
 </template>
+
+<style lang="scss" scoped>
+@use './Game.styles.scss';
+</style>

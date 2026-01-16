@@ -71,11 +71,13 @@
   }
 
   &::before {
+    opacity: 0%;
     left: 0;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
   }
 
   &::after {
+    opacity: 0%;
     right: 0;
     background: linear-gradient(to left, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
   }

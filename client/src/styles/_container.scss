@@ -25,7 +25,9 @@ $container-max-width: (
   padding-block-start: map-get($container-padding, xl);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  min-height: 100dvh;
+  padding-bottom: 2rem;
   align-items: center;
 
   @include respond(xs) {

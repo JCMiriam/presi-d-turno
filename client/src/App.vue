@@ -20,10 +20,10 @@ const showPlayersPanel = computed(() => {
 
   <main class="container">
     <router-view />
+    <PlayersPanelSingleton v-if="showPlayersPanel" />
   </main>
 
   <Overlay></Overlay>
-  <PlayersPanelSingleton v-if="showPlayersPanel" />
 </template>
 
 <style scoped lang="scss">
