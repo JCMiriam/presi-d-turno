@@ -184,54 +184,56 @@ watch(
 </script>
 
 <template>
-  <main class="lobby">
-    <section class="lobby__players">
-      <RoundsSelector
-        v-if="!isAbove('lg').value"
-        :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
-        :options="roundsOptions"
-        :disabled="!isHost || roomStore.status !== 'lobby'"
-        :model-value="roomStore.roundsToWin"
-        @update:modelValue="updateRounds"
-        hint="Esto define cuántas rondas necesita ganar alguien para terminar la partida."
-      ></RoundsSelector>
+  <main class="container">
+    <div class="lobby">
+      <section class="lobby__players">
+        <RoundsSelector
+          v-if="!isAbove('lg').value"
+          :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
+          :options="roundsOptions"
+          :disabled="!isHost || roomStore.status !== 'lobby'"
+          :model-value="roomStore.roundsToWin"
+          @update:modelValue="updateRounds"
+          hint="Esto define cuántas rondas necesita ganar alguien para terminar la partida."
+        ></RoundsSelector>
 
-      <div id="lobby-players-panel-slot"></div>
-    </section>
+        <div id="lobby-players-panel-slot"></div>
+      </section>
 
-    <section class="lobby__buttons">
-      <Button
-        size="full"
-        :text="
-          inviteStatus === 'copied'
-            ? 'Link copiado al portapapeles'
-            : inviteStatus === 'error'
-              ? 'No se ha podido copiar'
-              : 'Invitar jugadores'
-        "
-        variant="success"
-        appearance="solid"
-        @click="copyInviteLink"
-      ></Button>
+      <section class="lobby__buttons">
+        <Button
+          size="full"
+          :text="
+            inviteStatus === 'copied'
+              ? 'Link copiado al portapapeles'
+              : inviteStatus === 'error'
+                ? 'No se ha podido copiar'
+                : 'Invitar jugadores'
+          "
+          variant="success"
+          appearance="solid"
+          @click="copyInviteLink"
+        ></Button>
 
-      <Button
-        size="full"
-        text="Empezar partida"
-        variant="primary"
-        appearance="solid"
-        :disabled="!isHost"
-        @click="startMatch"
-      ></Button>
+        <Button
+          size="full"
+          text="Empezar partida"
+          variant="primary"
+          appearance="solid"
+          :disabled="!isHost"
+          @click="startMatch"
+        ></Button>
 
-      <RoundsSelector
-        v-if="isAbove('lg').value"
-        :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
-        :options="roundsOptions"
-        :disabled="!isHost || roomStore.status !== 'lobby'"
-        :model-value="roomStore.roundsToWin"
-        @update:modelValue="updateRounds"
-      ></RoundsSelector>
-    </section>
+        <RoundsSelector
+          v-if="isAbove('lg').value"
+          :label="isHost ? 'Seleccionar número de rondas' : 'Número de rondas:'"
+          :options="roundsOptions"
+          :disabled="!isHost || roomStore.status !== 'lobby'"
+          :model-value="roomStore.roundsToWin"
+          @update:modelValue="updateRounds"
+        ></RoundsSelector>
+      </section>
+    </div>
   </main>
 </template>
 

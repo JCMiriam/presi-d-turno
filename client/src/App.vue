@@ -18,7 +18,7 @@ const showPlayersPanel = computed(() => {
 <template>
   <div class="background-image" aria-hidden></div>
 
-  <main class="container">
+  <main>
     <router-view />
     <PlayersPanelSingleton v-if="showPlayersPanel" />
   </main>

@@ -184,72 +184,74 @@ function confirmWinner() {
 </script>
 
 <template>
-  <main class="game-page">
-    <h4 class="game-page__title">#{{ roomStore.roomId }} - Ronda {{ roomStore.round }}</h4>
+  <main class="container">
+    <div class="game-page">
+      <h4 class="game-page__title">#{{ roomStore.roomId }} - Ronda {{ roomStore.round }}</h4>
 
-    <section v-if="roomStore.currentQuestionText" class="game-page__question">
-      <AnswerCard :text="roomStore.currentQuestionText"></AnswerCard>
-    </section>
+      <section v-if="roomStore.currentQuestionText" class="game-page__question">
+        <AnswerCard :text="roomStore.currentQuestionText"></AnswerCard>
+      </section>
 
-    <p v-if="errorMsg" style="margin-top: 8px; color: #ffb3b3">Error: {{ errorMsg }}</p>
+      <p v-if="errorMsg" style="margin-top: 8px; color: #ffb3b3">Error: {{ errorMsg }}</p>
 
-    <section v-if="isPresi" class="game-page__answers-list">
-      <h3>Cartas jugadas</h3>
+      <section v-if="isPresi" class="game-page__answers-list">
+        <h3>Cartas jugadas</h3>
 
-      <p v-if="submissions.length === 0">Esperando cartas…</p>
+        <p v-if="submissions.length === 0">Esperando cartas…</p>
 
-      <div v-else class="game-page__answers-list--list">
-        <AnswerCard
-          v-for="s in submissions"
-          :key="s.id"
-          :id="s.id"
-          :text="s.text"
-          :selected="pickedSubmissionId === s.id"
-          @toggle="({ id }) => pickSubmission(id)"
+        <div v-else class="game-page__answers-list--list">
+          <AnswerCard
+            v-for="s in submissions"
+            :key="s.id"
+            :id="s.id"
+            :text="s.text"
+            :selected="pickedSubmissionId === s.id"
+            @toggle="({ id }) => pickSubmission(id)"
+          />
+        </div>
+
+        <Button
+          class="game-page__winner-card-btn"
+          text="Elegir ganadora"
+          size="full"
+          variant="primary"
+          appearance="solid"
+          color="pure-white"
+          :disabled="!pickedSubmissionId"
+          @click="confirmWinner"
+        ></Button>
+      </section>
+
+      <section v-else class="game-page__player-cards">
+        <p v-if="myHandCards.length === 0" style="opacity: 0.8">Cargando mano…</p>
+
+        <CardCarousel
+          v-else
+          :cards="myHandCards"
+          :selectedId="selectedId"
+          :disabled="hasSubmitted"
+          @toggle="onToggle"
         />
-      </div>
 
-      <Button
-        class="game-page__winner-card-btn"
-        text="Elegir ganadora"
-        size="full"
-        variant="primary"
-        appearance="solid"
-        color="pure-white"
-        :disabled="!pickedSubmissionId"
-        @click="confirmWinner"
-      ></Button>
-    </section>
+        <Button
+          text="Jugar carta"
+          size="full"
+          variant="primary"
+          appearance="solid"
+          color="pure-white"
+          :disabled="!canPlay"
+          @click="playSelectedCard"
+        ></Button>
 
-    <section v-else class="game-page__player-cards">
-      <p v-if="myHandCards.length === 0" style="opacity: 0.8">Cargando mano…</p>
+        <p v-if="hasSubmitted" style="margin-top: 8px; opacity: 0.8">
+          Carta enviada. Esperando al presi…
+        </p>
+      </section>
 
-      <CardCarousel
-        v-else
-        :cards="myHandCards"
-        :selectedId="selectedId"
-        :disabled="hasSubmitted"
-        @toggle="onToggle"
-      />
-
-      <Button
-        text="Jugar carta"
-        size="full"
-        variant="primary"
-        appearance="solid"
-        color="pure-white"
-        :disabled="!canPlay"
-        @click="playSelectedCard"
-      ></Button>
-
-      <p v-if="hasSubmitted" style="margin-top: 8px; opacity: 0.8">
-        Carta enviada. Esperando al presi…
-      </p>
-    </section>
-
-    <section class="game-page__players-list">
-      <div id="lobby-players-panel-slot"></div>
-    </section>
+      <section class="game-page__players-list">
+        <div id="lobby-players-panel-slot"></div>
+      </section>
+    </div>
   </main>
 </template>
 
