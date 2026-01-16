@@ -29,6 +29,7 @@ $container-max-width: (
   min-height: 100dvh;
   padding-bottom: 2rem;
   align-items: center;
+  pointer-events: none;
 
   @include respond(xs) {
     padding-inline: map-get($container-padding, xs);
